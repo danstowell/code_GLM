@@ -59,7 +59,7 @@ ncols = nx*nt;
 MSTM = zeros(slen,ncols);
 for i = 1:nx
     for j = 1:nt
-        MSTM(:,(i-1)*nt+j) = sameconv(Stim(:,i),gg.ktbas(:,j));
+        MSTM(:,(i-1)*nt+j) = real(sameconv(Stim(:,i),gg.ktbas(:,j)));
     end
 end
 
