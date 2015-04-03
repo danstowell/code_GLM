@@ -72,7 +72,7 @@ if (nargin >= 3)
             if length(iht) ~= length(glmstruct.iht)
                 error('mismatch between iht and h-kernel params ihbasprs');
             end
-            if size(glmstruct.ih,2)>1 & (nargin < 4)
+            if size(glmstruct.ih,2)>1 && (nargin < 4)
                 error('multi-cell glm struct passed in without cell # to fit');
             end
 

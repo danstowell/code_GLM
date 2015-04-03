@@ -58,7 +58,7 @@ elseif (length(flag) == 1)  % compute only for stimuli at times >= n ----------
     
     
 else % compute for spiking stimuli --------------------------------------------
-    if (min(flag) < 1) | (max(flag) > sz(1))
+    if (min(flag) < 1) || (max(flag) > sz(1))
         error('makeStimRows:  3rd arg should be spike indices (vals are too high or too low): %d %d', ...
             min(flag), max(flag));
     end

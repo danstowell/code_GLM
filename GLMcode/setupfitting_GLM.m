@@ -28,7 +28,7 @@ else
     OPRS.ihbas= gg.ihbas;
 end
 nCoupled = length(gg.couplednums);
-if (isempty(gg.ihbas2)) & (size(gg.ih,2) <= 1)
+if (isempty(gg.ihbas2)) && (size(gg.ih,2) <= 1)
     OPRS.ih2flag=0;
     OPRS.nh2=0;
 elseif (size(gg.ih,2) > 1)

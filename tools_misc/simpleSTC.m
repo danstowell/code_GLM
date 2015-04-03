@@ -25,7 +25,7 @@ if nargin < 4
 end
 
 [slen,swid] = size(Stim);
-if (length(sp) ~= size(Stim,1)) | any(mod(sp,1)~=0)
+if (length(sp) ~= size(Stim,1)) || any(mod(sp,1)~=0)
     % Convert list of spike times to spike-count vector
     sp = hist(sp,[1:slen]-.5)';
 end
