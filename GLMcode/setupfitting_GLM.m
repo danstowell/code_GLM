@@ -1,4 +1,4 @@
-function setupfitting_GLMbi(gg, Stim, maxsize);
+function setupfitting_GLM(gg, Stim, maxsize);
 %  setupfitting_GLMbi(gg, Stim,maxsize);
 %
 %  Sets global variables for ML estimation of GLM model using 'maxli_GLM'
