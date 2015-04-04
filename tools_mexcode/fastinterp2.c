@@ -12,7 +12,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include "mex.h"
-#include "matrix.h"
+#ifndef HAVE_OCTAVE
+  #include "matrix.h"
+#endif
 
 void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
