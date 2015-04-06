@@ -35,7 +35,7 @@ k = glmprs.k;  % stim filter
 Vstm = zeros(slen+2,ncells);
 if swid == size(k,2) % convolve if k is the same width as stimulus
     for j = 1:ncells
-        Vstm(2:end-1,j) = sameconv(Stim,k(:,:,j));
+        Vstm(2:end-1,j) = real(sameconv(Stim,k(:,:,j)));
     end
 else
     error('Mismatch between stimulus and filter size -- glmrunmod');

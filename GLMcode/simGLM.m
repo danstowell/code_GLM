@@ -49,7 +49,7 @@ rlen = round(slen/dt);  % length of binned response
 % -------------  Compute filtered resp to signal ----------------
 k = glmprs.k;  % stim filter
 if swid == size(k,2) % convolve if k is the same width as stimulus
-    Vstm = sameconv(Stim,k); 
+    Vstm = real(sameconv(Stim,k)); 
 else 
     error('Mismatch between stimulus and filter size -- glmrunmod');
 end
