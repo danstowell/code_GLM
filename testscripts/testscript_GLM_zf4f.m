@@ -1,24 +1,26 @@
-% testscript_GLM_zf4f.m
+function testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs)
+% testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs)
 %
-% load some zf4f data and analyse "as if" it were cell spiking data
+% load some zf4f data and analyse "as if" it were cell spiking data. writes out a plot.
 
 global RefreshRate;
 RefreshRate = 2;
 
 plotcols = {'r', 'b', 'g', 'm'};
 
+printf("testscript_GLM_zf4f(%s, %s, %s, %i, %i)\n", dataname, variantname, mat2str(indexmapper), startsecs, endsecs);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load the CSV data
-events = csvread('~/git/stored_docs/python/zftranscribe/output/annotreconciledproofed/zcompiled_session2a.csv');
-starttime = 300;
-endtime = 1200;
+events = csvread(sprintf('~/git/stored_docs/python/zftranscribe/output/annotreconciledproofed/zcompiled_%s.csv', dataname));
 %size(events)
-events = events((events(:,1) >= starttime) & (events(:,1) <= endtime), [1,3]);
+events = events((events(:,1) >= startsecs) & (events(:,1) <= endsecs), [1,3]);
 %size(events)
 
 tsp = cell(1,4);
 for whichn=1:4
-	tsp{whichn} = (events(events(:,2)==whichn-1, 1) - starttime) * RefreshRate;   % subtracting starttime, and converting to units of RefreshRate
+	matchid = indexmapper(whichn)-1;
+	tsp{whichn} = (events(events(:,2)==matchid, 1) - startsecs) * RefreshRate;   % subtracting startsecs, and converting to units of RefreshRate
 	printf('Bird %i has %i events\n', whichn, size(tsp{whichn}, 1));
 end;
 fflush(stdout); % NB octave-only
@@ -38,7 +40,7 @@ ggsim = makeSimStruct_GLMcpl(ggsimsolo{1},ggsimsolo{2},ggsimsolo{3},ggsimsolo{4}
 
 
 %% 3. Set up the "stimulus" appropriately (here it's zeros)
-slen = round((endtime-starttime) * RefreshRate);  % Stimulus length (frames)
+slen = round((endsecs-startsecs) * RefreshRate);  % Stimulus length (frames)
 swid = 1;
 Stim = zeros(slen,swid);
 
@@ -59,7 +61,7 @@ end;
 gg = cell(4, 1);
 opts = {'display', 'iter', 'maxiter', 100};
 for whichn = 1:4
-	fprintf('Fitting neuron %i\n', whichn);
+	%fprintf('Fitting bird #%i\n', whichn);
 	gg0 = makeFittingStruct_GLM(stas{whichn},DTsim,ggsim,whichn);  % Initialize params for fitting struct w/ sta
 	gg0.ih = gg0.ih*0;  % Initialize to zero
 	gg0.dc = gg0.dc*0;  % Initialize to zero
@@ -68,12 +70,21 @@ for whichn = 1:4
 	gg0.tsp2 = tsp(setdiff(1:4, whichn));  % spike trains from "coupled" cells (cell array of vectors)
 	gg0.tspi = 1; % 1st spike to use for computing likelihood (eg, can ignore 1st n spikes)
 	[gg{whichn}, negloglivalx] = MLfit_GLM(gg0, Stim, opts); % do ML (requires optimization toolbox)
+	printf("MLfit #%i gets neglogli %g\n", whichn, negloglivalx);
 end
 
 
 %% --- Plot results ----------------------------
-figure(3);
+h = figure(3);
 clf;
+
+set (h,'papertype', '<custom>');
+set (h,'paperunits','inches');
+set (h,'papersize',[6 5]);
+set (h,'paperposition', [0,0,[6 5]]);
+set (0,'defaulttextfontsize', 10);
+set (0,'defaultaxesfontsize', 10);
+
 ttk = -nkt+1:0;
 
 for whichn = 1:4
@@ -97,4 +108,7 @@ for whichn = 1:4
 	axis tight;
 end;
 xlabel('time (frames)')
+
+%saveas(h, 'zf4f_glm_kernels_session2a1.pdf')
+print(h, sprintf('zf4f_glm_kernels_%s%s.eps', dataname, variantname), '-depsc')
 
