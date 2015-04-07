@@ -1,5 +1,5 @@
-function testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs)
-% testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs)
+function [peakpos, peakval] = testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs)
+% [peakpos, peakval] = testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs)
 %
 % load some zf4f data and analyse "as if" it were cell spiking data. writes out a plot.
 
@@ -7,6 +7,9 @@ global RefreshRate;
 RefreshRate = 2;
 
 plotcols = {'r', 'b', 'g', 'm'};
+
+peakpos = zeros(4);
+peakval = zeros(4);
 
 printf("testscript_GLM_zf4f(%s, %s, %s, %i, %i)\n", dataname, variantname, mat2str(indexmapper), startsecs, endsecs);
 
@@ -100,15 +103,23 @@ for whichn = 1:4
 		else
 			ihdata = gg{whichn}.ih2(:, fromn);
 		end
-		plot(gg{whichn}.iht, exp(gg{whichn}.ihbas*ihdata), plotcol);
+		plotx = gg{whichn}.iht;
+		ploty = exp(gg{whichn}.ihbas*ihdata);
+		plot(plotx, ploty, plotcol);
 		ylim([0, 5]);
+
+		% For collating, we'll calc the peak pos&sizes
+		[peakvalraw, peakposraw] = max(ploty);
+		peakpos(fromn,whichn) = plotx(peakposraw) / RefreshRate;
+		peakval(fromn,whichn) = peakvalraw;
 	end;
-	title(sprintf('Bird %i: exponentiated post-call kernels', whichn));
+	title(sprintf('Bird %i: exp(kernels) %s%s', whichn, dataname, variantname));
 	legend('from 1', 'from 2', 'from 3', 'from 4', 'location', 'northeast');
 	axis tight;
 end;
 xlabel('time (frames)')
 
 %saveas(h, 'zf4f_glm_kernels_session2a1.pdf')
-print(h, sprintf('zf4f_glm_kernels_%s%s.eps', dataname, variantname), '-depsc')
+%print(h, sprintf('zf4f_glm_kernels_%s%s.eps', dataname, variantname), '-depsc')
+saveas(h, sprintf('zf4f_glm_kernels_%s%s.png', dataname, variantname))
 
