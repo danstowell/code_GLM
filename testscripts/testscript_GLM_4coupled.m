@@ -46,7 +46,7 @@ ggsim.ih(:,3,4) = hhcpl(:,1); % 3rd to 4th
 % === Make Fig: model params =======================
 figure(1);
 clf;
-plotcols = {'r', 'b', 'g', 'c'};
+plotcols = {'r', 'b', 'g', 'm'};
 for whichn = 1:4
 	subplot(4,2,whichn*2-1);
 	plot(ttk, ggsim.k(:,:,whichn));
