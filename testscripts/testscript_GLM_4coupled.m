@@ -1,4 +1,4 @@
-% Dan's modified version of testscript_GLM_coupled.m
+% testscript_GLM_4coupled.m
 %
 % Test code for simulating and fitting a coupled GLM (4 neurons).
 %
@@ -21,7 +21,7 @@ RefreshRate = 100;
 %%  1.  Set parameters and display for GLM  ============ %
 
 DTsim = .01; % Bin size for simulating model & computing likelihood (in units of stimulus frames)
-nkt = 40;     % DAN 20;    % Number of time bins in filter;
+nkt = 40;    % Number of time bins in filter;
 ttk = [-nkt+1:0]';
 ggsimsolo = cell(4,1);
 for whichn = 1:4
@@ -40,8 +40,8 @@ hhcpl(:,2) = ihbasis*[-1;-1;0;0;.25]*2;
 % NOTE: here we are setting our simulation up as TWO coupled pairs, with the pairs independent of each other
 ggsim.ih(:,2,1) = hhcpl(:,2); % 2nd cell coupling to first
 ggsim.ih(:,1,2) = hhcpl(:,1); % 1st cell coupling to second
-ggsim.ih(:,4,3) = hhcpl(:,2); % DAN 4th to 3rd
-ggsim.ih(:,3,4) = hhcpl(:,1); % DAN 3rd to 4th
+ggsim.ih(:,4,3) = hhcpl(:,2); % 4th to 3rd
+ggsim.ih(:,3,4) = hhcpl(:,1); % 3rd to 4th
 
 % === Make Fig: model params =======================
 figure(1);
@@ -116,7 +116,7 @@ gg = cell(4, 1);
 opts = {'display', 'iter', 'maxiter', 100};
 for whichn = 1:4
 	fprintf('Fitting neuron %i\n', whichn);
-	gg0 = makeFittingStruct_GLM(stas{whichn},DTsim,ggsim,whichn);  % Initialize params for fitting struct w/ sta        ---------- DAN not sure if "1" at end shouldve been "whichn"
+	gg0 = makeFittingStruct_GLM(stas{whichn},DTsim,ggsim,whichn);  % Initialize params for fitting struct w/ sta
 	gg0.ih = gg0.ih*0;  % Initialize to zero
 	gg0.dc = gg0.dc*0;  % Initialize to zero
 
