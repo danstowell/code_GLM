@@ -17,67 +17,92 @@ struct('dataname', 'session3b', 'variantname', '2', 'indexmapper', [1,2,3,4], 's
 };
 
 if dofit
+	numcalls   = struct();
 	resultspos = struct();
 	resultsval = struct();
 	for whichset=1:size(setses,2)
 		d = setses{whichset};
 		runname = sprintf('%s%s', d.dataname, d.variantname);
-		[resultspos.(runname), resultsval.(runname)] = testscript_GLM_zf4f(d.dataname, d.variantname, d.indexmapper, d.startsecs, d.endsecs);
+		[numcalls.(runname), resultspos.(runname), resultsval.(runname)] = testscript_GLM_zf4f(d.dataname, d.variantname, d.indexmapper, d.startsecs, d.endsecs);
 	end
 end
 
 
-seqlist = {'session2a1', 'session2a2', 'session2b1', 'session2b2'};
+seqlists = { ...
+{'session2_15', {'session2a1', 'session2a2', 'session2b1', 'session2b2'}}, ...
+{'session3_15', {'session3a1', 'session3a2', 'session3b1', 'session3b2'}}, ...
+};
 
-h = figure(4);
-clf();
-for whichn=1:4
-	% plot peak level and peak time
-	plotdata_p = zeros(4);
-	plotdata_t = zeros(4);
-	for fromn=1:4
-		for whichsess=1:4
-			plotdata_pos(whichsess, fromn) = resultspos.(seqlist{whichsess})(fromn, whichn);
-			plotdata_val(whichsess, fromn) = resultsval.(seqlist{whichsess})(fromn, whichn);
+for whichseq=1:size(seqlists, 2)
+	seqlist = seqlists{whichseq};
+	oursetses = seqlist{2};
+
+	h = figure(4);
+	clf();
+	for whichn=1:4
+		% plot peak level and peak time
+		plotdata_num = zeros(4,1);
+		plotdata_pos = zeros(4);
+		plotdata_val = zeros(4);
+		for fromn=1:4
+			for whichsess=1:4
+				plotdata_num(whichsess)        =     numcalls.(oursetses{whichsess})(whichn);
+				plotdata_pos(whichsess, fromn) = 1 / max(1e-1, resultspos.(oursetses{whichsess})(fromn, whichn));
+				plotdata_val(whichsess, fromn) =     resultsval.(oursetses{whichsess})(fromn, whichn);
+			end;
+		end;
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		subplot(4, 3, whichn*3-2);
+		plotcol = sprintf('%sx-', plotcols{whichn});
+		plot(plotdata_num, plotcol);
+		xlim([0.5, 4.5]);
+		ylim([0, max(plotdata_num)+10]);
+		set(gca,'XTick',[]);
+		ylabel(sprintf('Bird %i', whichn));
+		if whichn==1
+			title('Num calls emitted in each 15min period');
+		end;
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		subplot(4, 3, whichn*3-1);
+		hold on;
+		for fromn=1:4
+			if whichn==fromn
+				plotcol = 'kx--';
+			else
+				plotcol = sprintf('%sx-', plotcols{fromn});
+			end
+			plot(plotdata_val(:, fromn), plotcol);
+		end
+		hold off;
+		ylabel(sprintf('Bird %i', whichn));
+		%ylim([0, 200]);
+		xlim([0.5, 4.5]);
+		set(gca,'XTick',[]);
+		legend('from 1', 'from 2', 'from 3', 'from 4', 'location', 'northeast');
+		if whichn==1
+			title('Relative intensity at kernel peak');
+		end;
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		subplot(4, 3, whichn*3);
+		hold on;
+		for fromn=1:4
+			if whichn==fromn
+				plotcol = 'kx--';
+			else
+				plotcol = sprintf('%sx-', plotcols{fromn});
+			end
+			plot(plotdata_pos(:, fromn), plotcol);
+		end
+		hold off;
+		ylabel(sprintf('Bird %i', whichn));
+		%ylim([0, 10]);
+		xlim([0.5, 4.5]);
+		set(gca,'XTick',[]);
+		legend('from 1', 'from 2', 'from 3', 'from 4', 'location', 'northeast');
+		if whichn==1
+			title('1/latency of kernel peak (1/sec)');
 		end;
 	end;
-	subplot(4, 2, whichn*2-1);
-	hold on;
-	for fromn=1:4
-		if whichn==fromn
-			plotcol = 'kx--';
-		else
-			plotcol = sprintf('%sx-', plotcols{fromn});
-		end
-		plot(plotdata_val(:, fromn), plotcol);
-	end
-	hold off;
-	ylabel(sprintf('Bird %i', whichn));
-	%ylim([0, 200]);
-	xlim([0.5, 4.5]);
-	set(gca,'XTick',[]);
-	legend('from 1', 'from 2', 'from 3', 'from 4', 'location', 'northeast');
-	if whichn==1
-		title('Value at kernel peak');
-	end;
-	subplot(4, 2, whichn*2);
-	hold on;
-	for fromn=1:4
-		if whichn==fromn
-			plotcol = 'kx--';
-		else
-			plotcol = sprintf('%sx-', plotcols{fromn});
-		end
-		plot(plotdata_pos(:, fromn), plotcol);
-	end
-	hold off;
-	%ylim([0, 10]);
-	xlim([0.5, 4.5]);
-	set(gca,'XTick',[]);
-	legend('from 1', 'from 2', 'from 3', 'from 4', 'location', 'northeast');
-	if whichn==1
-		title('Time of kernel peak (sec)');
-	end;
+	saveas(h, sprintf('zf4f_glm_evolution_%s.png', seqlist{1}));
 end;
-saveas(h, sprintf('zf4f_glm_evolution_%s.png', 'session2_15'))
 

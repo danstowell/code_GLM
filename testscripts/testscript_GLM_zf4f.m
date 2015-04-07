@@ -1,4 +1,4 @@
-function [peakpos, peakval] = testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs)
+function [numcalls, peakpos, peakval] = testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs)
 % [peakpos, peakval] = testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs)
 %
 % load some zf4f data and analyse "as if" it were cell spiking data. writes out a plot.
@@ -8,6 +8,7 @@ RefreshRate = 2;
 
 plotcols = {'r', 'b', 'g', 'm'};
 
+numcalls = zeros(4,1);
 peakpos = zeros(4);
 peakval = zeros(4);
 
@@ -24,7 +25,8 @@ tsp = cell(1,4);
 for whichn=1:4
 	matchid = indexmapper(whichn)-1;
 	tsp{whichn} = (events(events(:,2)==matchid, 1) - startsecs) * RefreshRate;   % subtracting startsecs, and converting to units of RefreshRate
-	printf('Bird %i has %i events\n', whichn, size(tsp{whichn}, 1));
+	numcalls(whichn) = size(tsp{whichn}, 1);
+	printf('Bird %i has %i events\n', whichn, numcalls(whichn));
 end;
 fflush(stdout); % NB octave-only
 
@@ -66,6 +68,7 @@ opts = {'display', 'iter', 'maxiter', 100};
 for whichn = 1:4
 	%fprintf('Fitting bird #%i\n', whichn);
 	gg0 = makeFittingStruct_GLM(stas{whichn},DTsim,ggsim,whichn);  % Initialize params for fitting struct w/ sta
+% TODO: the call above imposes an "absref" (absolute refactory period) of 10 * DTsim. I'd quite like to be able to shrink that away.
 	gg0.ih = gg0.ih*0;  % Initialize to zero
 	gg0.dc = gg0.dc*0;  % Initialize to zero
 
