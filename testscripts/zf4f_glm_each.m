@@ -1,7 +1,7 @@
 
 % script to run the GLM fitting on a sequence of zf4f 15-min data chunks
 
-dofit = 0;   % if 0 it doesn't rerun the fit, but uses whatever we got in the last run
+dofit = 1;   % if 0 it doesn't rerun the fit, but uses whatever we got in the last run
 
 plotcols = {'r', 'b', 'g', 'm'};
 
@@ -36,6 +36,18 @@ seqlists = { ...
 for whichseq=1:size(seqlists, 2)
 	seqlist = seqlists{whichseq};
 	oursetses = seqlist{2};
+
+	outfnamestem = sprintf('zf4f_glm_evolution_%s', seqlist{1});
+
+	csvfname = sprintf('%s_indi.csv', outfnamestem);
+	disp(csvfname);
+	csvfp_indi = fopen(csvfname, 'w');
+	fprintf(csvfp_indi, 'runname,individ,numcalls\n');
+
+	csvfname = sprintf('%s_pair.csv', outfnamestem);
+	disp(csvfname);
+	csvfp_pair = fopen(csvfname, 'w');
+	fprintf(csvfp_pair, 'runnname,frm,too,peakval,peaklag\n');
 
 	h = figure(4);
 	clf();
@@ -102,7 +114,21 @@ for whichseq=1:size(seqlists, 2)
 		if whichn==1
 			title('1/latency of kernel peak (1/sec)');
 		end;
+
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		% write csv data
+		for whichsess=1:4
+			fprintf(csvfp_indi, '%s,%i,%i\n', oursetses{whichsess}, whichn, plotdata_num(whichsess));
+			for fromn=1:4
+				fprintf(csvfp_pair, '%s,%i,%i,%g,%g\n', oursetses{whichsess},fromn, whichn, plotdata_val(whichsess, fromn), 1/plotdata_pos(whichsess, fromn));
+			end;
+		end;
+
 	end;
-	saveas(h, sprintf('zf4f_glm_evolution_%s.png', seqlist{1}));
+	saveas(h, sprintf('%s.png', outfnamestem));
+	fflush(csvfp_indi);
+	fflush(csvfp_pair);
+	fclose(csvfp_indi);
+	fclose(csvfp_pair);
 end;
 

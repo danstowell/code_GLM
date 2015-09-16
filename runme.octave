@@ -1,0 +1,5 @@
+#!/usr/bin/env octave
+
+setpaths
+zf4f_glm_each
+
