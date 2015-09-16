@@ -25,6 +25,7 @@ ggsimcpl = makeSimStruct_GLMcpl(ggsim1, ggsim2, ggsim3);
 
 % Let's construct an A->B->C influence structure
 ggsim.ih *= 0;
+ggsim.ihbasprs.b = 100;
 [iht,ihbas,ihbasis] = makeBasis_PostSpike(ggsim.ihbasprs, ggsim.dt);
 toneighbour = ihbasis*[0 0 0 1 0.5]';
 %plot(ggsim.iht, toneighbour);
@@ -33,7 +34,7 @@ ggsim.ih(:,2,3) = toneighbour;
 
 
 % OK, now we can sample from the model.
-slen = 60; % Stimulus length (frames) 
+slen = 600; % Stimulus length (frames) 
 swid = 1;  % Stimulus width  (pixels).  Must match # pixels in stim filter
 Stim = zeros(slen,swid);
 [tsp, vmem, Ispk] = simGLMcpl(ggsimcpl, Stim);  % Simulate GLM response
