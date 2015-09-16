@@ -12,7 +12,7 @@ numcalls = zeros(4,1);
 peakpos = zeros(4);
 peakval = zeros(4);
 
-printf("testscript_GLM_zf4f(%s, %s, %s, %i, %i)\n", dataname, variantname, mat2str(indexmapper), startsecs, endsecs);
+printf('testscript_GLM_zf4f(%s, %s, %s, %i, %i)\n', dataname, variantname, mat2str(indexmapper), startsecs, endsecs);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load the CSV data
@@ -76,7 +76,7 @@ for whichn = 1:4
 	gg0.tsp2 = tsp(setdiff(1:4, whichn));  % spike trains from "coupled" cells (cell array of vectors)
 	gg0.tspi = 1; % 1st spike to use for computing likelihood (eg, can ignore 1st n spikes)
 	[gg{whichn}, negloglivalx] = MLfit_GLM(gg0, Stim, opts); % do ML (requires optimization toolbox)
-	printf("MLfit #%i gets neglogli %g\n", whichn, negloglivalx);
+	printf('MLfit #%i gets neglogli %g\n', whichn, negloglivalx);
 end
 
 

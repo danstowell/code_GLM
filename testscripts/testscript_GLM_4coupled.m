@@ -83,7 +83,7 @@ plot(1:slen, Stim, 'k', 'linewidth', 2);
 title('GWN stimulus');
 axis tight;
 for whichn = 4:-1:1
-	printf("Plotting currents for cell %i. minvmem is %g, maxvmem is %g, size(tsp) is %s\n", whichn, min(vmem(:,whichn)), max(vmem(:,whichn)), mat2str(size(tsp{whichn})));
+	printf('Plotting currents for cell %i. minvmem is %g, maxvmem is %g, size(tsp) is %s\n', whichn, min(vmem(:,whichn)), max(vmem(:,whichn)), mat2str(size(tsp{whichn})));
 	subplot(5,2,whichn*2+1); %------------------------
 	plot(tt, vmem(:,whichn), tsp{whichn}, max(vmem(:,whichn))*ones(size(tsp{whichn})), 'ro');
 	title(sprintf('cell %i: net voltage + spikes', whichn));
