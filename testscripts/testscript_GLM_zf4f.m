@@ -4,7 +4,7 @@ function [numcalls, peakpos, peakval] = testscript_GLM_zf4f(dataname, variantnam
 % load some zf4f data and analyse "as if" it were cell spiking data. writes out a plot.
 
 global RefreshRate;
-RefreshRate = 2;
+RefreshRate = 1;  % the "RefreshRate" is the samplerate of the stimulus (in Hz). I don't currently use stimulus so I set it to 1. Below, "DTsim" sets the time-resultion used in the model.
 
 plotcols = {'r', 'b', 'g', 'm'};
 
@@ -34,7 +34,7 @@ fflush(stdout); % NB octave-only
 
 %%  1.  Set parameters
 
-DTsim = .01; % Bin size for simulating model & computing likelihood (in units of stimulus frames)
+DTsim = .005; % Bin size for simulating model & computing likelihood (in units of stimulus frames)
 nkt = 40;    % Number of time bins in filter;
 ttk = [-nkt+1:0]';
 ggsimsolo = cell(4,1);
