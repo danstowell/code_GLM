@@ -1,5 +1,7 @@
-#!/usr/bin/env octave
+#!/bin/sh
 
-setpaths
-zf4f_glm_each
+octave -q --no-gui --no-window-system --eval "setpaths
+simulate_coupled_network
+#zf4f_glm_each
+"
 

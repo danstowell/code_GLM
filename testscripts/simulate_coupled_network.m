@@ -23,18 +23,66 @@ ggsimcpl = makeSimStruct_GLMcpl(ggsim1, ggsim2, ggsim3);
 %    plot(ggsim.iht, ggsim.ih[:,1,1])
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Let's construct an A->B->C influence structure
-ggsim.ih *= 0;
-ggsim.ihbasprs.b = 100;
-[iht,ihbas,ihbasis] = makeBasis_PostSpike(ggsim.ihbasprs, ggsim.dt);
-toneighbour = ihbasis*[0 0 0 1 0.5]';
-%plot(ggsim.iht, toneighbour);
-ggsim.ih(:,1,2) = toneighbour;
-ggsim.ih(:,2,3) = toneighbour;
+% Let's construct an A->B->C influence structure, with manually-designed message-passing and self-inhibiting kernels
+[iht,ihbas,ihbasis] = makeBasis_PostSpike(ggsimcpl.ihbasprs, ggsimcpl.dt);
+toself      = ihbasis*[0 0 -1 0 0 0 0 0]';
+toneighbour = ihbasis*[0 0 0 -0.2 1.5 -0.2 0 0]';
+%plot(ggsimcpl.iht, toneighbour);
+
+%disp(ggsimcpl);
+
+if false
+	disp('ihbas:');
+	disp(size(ihbas));
+	disp('toneighbour:');
+	disp(size(toneighbour));
+	disp('ggsimcpl.ih (originally filled in with eg gg.ihbas*gg.ih(:,1)):');
+	disp(size(ggsimcpl.ih));
+	disp('ggsimcpl.iht (toneighbour should match this length):');
+	disp(size(ggsimcpl.iht));
+end;
+
+for which=1:3
+	ggsimcpl.ih(:,which,which) = toself;
+end
+for which=1:2
+	ggsimcpl.ih(:,which,which+1) = toneighbour;
+end
+
+% the DC
+ggsimcpl.dc = ggsimcpl.dc * 0 - 1;
+
+
+% Having designed the kernels, we had better plot them to file so we understand them!
+h = figure();
+% orient(h, 'landscape');  % ugh, fails on my octave
+clf();
+for frm=1:3
+	for too=1:3
+		subplot(4, 3, (frm-1)*3+too);
+		plot(ggsimcpl.iht, exp(ggsimcpl.iht*0), 'k--', ggsimcpl.iht, exp(ggsimcpl.ih(:, frm, too)));
+		if frm==1
+			title('exponentiated post-spike kernels');
+		end
+		if frm==3
+			xlabel('time after spike (frames)');
+		end
+		if too==1
+			ylabel('gain');
+		end
+		axis tight;
+	end;
+end;
+subplot(4, 3, 11);
+plot(ggsimcpl.iht, ihbasis);
+axis tight;
+xlabel('time after spike (frames)');
+title('basis for h');
+saveas(h, 'plot_simulate_coupled_network_kernels.pdf');
 
 
 % OK, now we can sample from the model.
-slen = 600; % Stimulus length (frames) 
+slen = 6000; %60; %TODO 600; % Stimulus length (frames) 
 swid = 1;  % Stimulus width  (pixels).  Must match # pixels in stim filter
 Stim = zeros(slen,swid);
 [tsp, vmem, Ispk] = simGLMcpl(ggsimcpl, Stim);  % Simulate GLM response
