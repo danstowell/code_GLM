@@ -82,6 +82,20 @@ title('basis for h');
 saveas(h, 'plot_simulate_coupled_network_kernels.pdf');
 
 
+% for each coupling kernel, find the peak (pos and val), and write it out to file
+[peakvals, peakposs] = max(ggsimcpl.ih,    [], 1);
+peakvals = squeeze(peakvals);
+peakposs = squeeze(peakposs) * DTsim;
+csvfp = fopen('data_simulate_coupled_network_params.csv', 'w');
+fprintf(csvfp, 'frm,too,peakval,peakpos\n');
+for frm=1:3
+	for too=1:3
+		fprintf(csvfp, '%i,%i,%g,%g\n', frm, too, peakvals(frm, too), peakposs(frm, too));
+	end
+end
+fclose(csvfp);
+
+
 % OK, now we can sample from the model.
 slen = 6000; %60; %TODO 600; % Stimulus length (frames) 
 swid = 1;  % Stimulus width  (pixels).  Must match # pixels in stim filter
@@ -104,7 +118,7 @@ end;
 tspdata = sortrows(tspdata);
 
 
-% write out a CSV file
+% write out a CSV file of the generated timestamps
 csvfp = fopen('data_simulate_coupled_network.csv', 'w');
 fprintf(csvfp, 'time,individ,dursecs\n');
 for row=tspdata'
