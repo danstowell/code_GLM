@@ -1,8 +1,10 @@
 *~
-data*.csv
-plot*.pdf
 *.png
 octave-workspace
 tools_mexcode/*.mex
 tools_mexcode/*.o
+
+data*.csv
+zf4f*.csv
+plot*.pdf
 
