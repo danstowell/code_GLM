@@ -25,8 +25,9 @@ ggsimcpl = makeSimStruct_GLMcpl(ggsim1, ggsim2, ggsim3);
 
 % Let's construct an A->B->C influence structure, with manually-designed message-passing and self-inhibiting kernels
 [iht,ihbas,ihbasis] = makeBasis_PostSpike(ggsimcpl.ihbasprs, ggsimcpl.dt);
-toself      = ihbasis*[0 0 -1 0 0 0 0 0]';
-toneighbour = ihbasis*[0 0 0 -0.2 1.5 -0.2 0 0]';
+%toself      = ihbasis*[0 0 -1 0 0 0 0 0]' * 10;
+toself      = ihbasis*[0 0 -1 -0.8 -0.6 -0.4 -0.2 0]' * 10;
+toneighbour = ihbasis*[0 0 0 -0.2 1.5 -0.2 0 0]' * 10;
 %plot(ggsimcpl.iht, toneighbour);
 
 %disp(ggsimcpl);
@@ -49,8 +50,8 @@ for which=1:2
 	ggsimcpl.ih(:,which,which+1) = toneighbour;
 end
 
-% the DC
-ggsimcpl.dc = ggsimcpl.dc * 0 - 1;
+% the DC. note that we want the "originator" to spike unstimulated now and again, but not the others.
+ggsimcpl.dc = ggsimcpl.dc * 0 - [0, 10, 10];
 
 
 % Having designed the kernels, we had better plot them to file so we understand them!
