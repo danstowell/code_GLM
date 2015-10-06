@@ -20,10 +20,11 @@ if dofit
 	numcalls   = struct();
 	resultspos = struct();
 	resultsval = struct();
+	negloglis  = struct();
 	for whichset=1:size(setses,2)
 		d = setses{whichset};
 		runname = sprintf('%s%s', d.dataname, d.variantname);
-		[numcalls.(runname), resultspos.(runname), resultsval.(runname)] = testscript_GLM_zf4f(d.dataname, d.variantname, d.indexmapper, d.startsecs, d.endsecs);
+		[numcalls.(runname), resultspos.(runname), resultsval.(runname), negloglis.(runname)] = testscript_GLM_zf4f(d.dataname, d.variantname, d.indexmapper, d.startsecs, d.endsecs);
 	end
 end
 

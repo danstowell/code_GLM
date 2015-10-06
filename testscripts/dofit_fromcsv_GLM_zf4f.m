@@ -1,4 +1,4 @@
-function [numcalls, peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, plotpath, csvpath)
+function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, plotpath, csvpath)
 % [peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, plotpath, csvpath)
 %
 % load some zf4f-format data and analyse "as if" it were cell spiking data. returns analysed data.
@@ -81,8 +81,8 @@ for whichn = 1:4
 	gg0.tsp = tsp{whichn};   % cell spike times (vector)
 	gg0.tsp2 = tsp(setdiff(1:4, whichn));  % spike trains from "coupled" cells (cell array of vectors)
 	gg0.tspi = 1; % 1st spike to use for computing likelihood (eg, can ignore 1st n spikes)
-	[gg{whichn}, negloglivalx] = MLfit_GLM(gg0, Stim, opts); % do ML (requires optimization toolbox)
-	printf('MLfit #%i gets neglogli %g\n', whichn, negloglivalx);
+	[gg{whichn}, neglogli] = MLfit_GLM(gg0, Stim, opts); % do ML (requires optimization toolbox)
+	printf('MLfit #%i gets neglogli %g\n', whichn, neglogli);
 end
 
 
