@@ -1,5 +1,5 @@
-function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, plotpath, csvoutpath)
-% [peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, plotpath, csvoutpath)
+function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, plotpath, csvoutpath)
+% [peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, plotpath, csvoutpath)
 %
 % load some zf4f-format data and analyse "as if" it were cell spiking data. returns analysed data.
 % also does a plot and writes it to a file in the folder named by 'plotpath'. if 'plotpath' is '' or 0 it DOESN'T plot. to plot in cwd use '.'
@@ -8,15 +8,13 @@ function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath
 global RefreshRate;
 RefreshRate = 1;  % the "RefreshRate" is the samplerate of the stimulus (in Hz). I don't currently use stimulus so I set it to 1. Below, "DTsim" sets the time-resultion used in the model.
 
-plotcols = {'r', 'b', 'g', 'm'};
-
-k = 4; % TODO adapt the code so that it correctly adapts to varying k
+plotcols = {'r', 'b', 'g', 'm', 'y'};
 
 numcalls = zeros(k,1);
 peakpos = zeros(k);
 peakval = zeros(k);
 
-printf('dofit_fromcsv_GLM_zf4f(%s, %s, %s, %i, %i, %s, %s)\n', csvpath, runlabel, mat2str(indexmapper), startsecs, endsecs, plotpath, csvoutpath);
+printf('dofit_fromcsv_GLM_zf4f(%s, %s, %i, %s, %i, %i, %s, %s)\n', csvpath, runlabel, k, mat2str(indexmapper), startsecs, endsecs, plotpath, csvoutpath);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load the CSV data
@@ -45,7 +43,7 @@ ggsimsolo = cell(k,1);
 for whichn = 1:k
 	ggsimsolo{whichn} = makeSimStruct_GLM(nkt,DTsim);  % Create GLM struct with default params
 end;
-ggsim = makeSimStruct_GLMcpl(ggsimsolo{1},ggsimsolo{2},ggsimsolo{3},ggsimsolo{4});  % TODO how can this deal with varying k?
+ggsim = makeSimStruct_GLMcpl(ggsimsolo{1:k});
 
 
 %% 3. Set up the "stimulus" appropriately (here it's zeros)
@@ -116,14 +114,22 @@ if plotpath
 	set (0,'defaulttextfontsize', 10);
 	set (0,'defaultaxesfontsize', 10);
 
+	legendargs = cell(k+2,1);
+	for whichn = 1:k
+		legendargs{whichn} = sprintf('from %i', whichn);
+	end
+	legendargs{k+1} = 'location';
+	legendargs{k+2} = 'northeast';
+
 	ttk = -nkt+1:0;
 
+	numrows = ceil(sqrt(k));
+	numcols = ceil(k/numrows);
 	for whichn = 1:k
-		% TODO num subplots should vary with k
-		subplot(2,2, whichn); % ----------------------------------
+		subplot(numrows, numcols, whichn); % ----------------------------------
 		hold on;
 		for fromn = 1:k
-			plotcol = plotcols{fromn};
+			plotcol = plotcols{mod(fromn-1, numel(plotcols))+1};  % TODO wrap
 			if whichn==fromn
 				ihdata = gg{whichn}.ih;
 				plotcol = 'k--';
@@ -138,7 +144,7 @@ if plotpath
 			ylim([0, 5]);
 		end;
 		title(sprintf('Bird %i: exp(kernels) %s', whichn, runlabel));
-		legend('from 1', 'from 2', 'from 3', 'from 4', 'location', 'northeast'); % TODO should vary with k
+		legend(legendargs{1:k+2});
 		axis tight;
 	end;
 	xlabel('time (frames)')
