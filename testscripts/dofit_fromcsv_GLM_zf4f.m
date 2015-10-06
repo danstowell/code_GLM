@@ -32,6 +32,8 @@ for whichn=1:k
 end;
 fflush(stdout); % NB octave-only
 
+endsecs_actual = max(events(:,1)) + 0.1;   % this tells us how far into the distance we actually need to look.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%  1.  Set parameters
@@ -47,7 +49,7 @@ ggsim = makeSimStruct_GLMcpl(ggsimsolo{1:k});
 
 
 %% 3. Set up the "stimulus" appropriately (here it's zeros)
-slen = round((endsecs-startsecs) * RefreshRate);  % Stimulus length (frames)
+slen = round((endsecs_actual-startsecs) * RefreshRate);  % Stimulus length (frames)
 swid = 1;
 Stim = zeros(slen,swid);
 
