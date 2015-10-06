@@ -1,11 +1,11 @@
-function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, plotpath, csvpath)
+function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, plotpath, csvoutpath)
 % [peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, plotpath, csvpath)
 %
 % load some zf4f-format data and analyse "as if" it were cell spiking data. returns analysed data.
 % also does a plot and writes it to a file in the folder named by 'plotpath'. if 'plotpath' is '' or 0 it DOESN'T plot. to plot in cwd use '.'
-% 'csvpath' parameter is analogous, and is about writing CSV data out to file
+% 'csvoutpath' parameter is analogous, and is about writing CSV data out to file
 
-% TODO add 'csvpath' parameter, treated analogously to plotpath
+% TODO add 'csvoutpath' parameter, treated analogously to plotpath
 
 % TODO adapt the code so that it correctly adapts to varying k
 
@@ -18,7 +18,7 @@ numcalls = zeros(4,1);
 peakpos = zeros(4);
 peakval = zeros(4);
 
-printf('dofit_fromcsv_GLM_zf4f(%s, %s, %s, %i, %i, %s)\n', csvpath, runlabel, mat2str(indexmapper), startsecs, endsecs, plotpath);
+printf('dofit_fromcsv_GLM_zf4f(%s, %s, %s, %i, %i, %s, %s)\n', csvpath, runlabel, mat2str(indexmapper), startsecs, endsecs, plotpath, csvoutpath);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load the CSV data
@@ -139,7 +139,7 @@ end
 
 
 
-if csvpath
+if csvoutpath
 	% TODO - refactor the "plotdata" stuff out of zf4f_glm_each and put it in a separate statsgetter func file
 	%  2d stats: peak posses, peak mags
 	%  1d stats: num calls
