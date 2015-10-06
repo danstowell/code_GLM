@@ -1,5 +1,5 @@
 function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, plotpath, csvoutpath)
-% [peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, plotpath, csvpath)
+% [peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, plotpath, csvoutpath)
 %
 % load some zf4f-format data and analyse "as if" it were cell spiking data. returns analysed data.
 % also does a plot and writes it to a file in the folder named by 'plotpath'. if 'plotpath' is '' or 0 it DOESN'T plot. to plot in cwd use '.'
@@ -70,6 +70,7 @@ end;
 
 %% 4. Do ML fitting of GLM params
 gg = cell(4, 1);
+neglogli = 0;
 opts = {'display', 'iter', 'maxiter', 100};
 for whichn = 1:4
 	%fprintf('Fitting bird #%i\n', whichn);
@@ -81,10 +82,29 @@ for whichn = 1:4
 	gg0.tsp = tsp{whichn};   % cell spike times (vector)
 	gg0.tsp2 = tsp(setdiff(1:4, whichn));  % spike trains from "coupled" cells (cell array of vectors)
 	gg0.tspi = 1; % 1st spike to use for computing likelihood (eg, can ignore 1st n spikes)
-	[gg{whichn}, neglogli] = MLfit_GLM(gg0, Stim, opts); % do ML (requires optimization toolbox)
-	printf('MLfit #%i gets neglogli %g\n', whichn, neglogli);
+	[gg{whichn}, neglogli_each] = MLfit_GLM(gg0, Stim, opts); % do ML (requires optimization toolbox)
+	printf('MLfit #%i gets neglogli %g\n', whichn, neglogli_each);
+	neglogli += neglogli_each;
 end
 
+
+%% --- Calc summary stats - used for csv and for returning ----------------------------
+for whichn = 1:4
+	for fromn = 1:4
+		if whichn==fromn
+			ihdata = gg{whichn}.ih;
+		elseif whichn<fromn
+			ihdata = gg{whichn}.ih2(:, fromn-1);
+		else
+			ihdata = gg{whichn}.ih2(:, fromn);
+		end
+		plotx = gg{whichn}.iht;
+		ploty = exp(gg{whichn}.ihbas*ihdata);
+		[peakvalraw, peakposraw] = max(ploty);
+		peakpos(fromn,whichn) = plotx(peakposraw) / RefreshRate;
+		peakval(fromn,whichn) = peakvalraw;
+	end
+end
 
 %% --- Plot results ----------------------------
 if plotpath
@@ -117,11 +137,6 @@ if plotpath
 			ploty = exp(gg{whichn}.ihbas*ihdata);
 			plot(plotx, ploty, plotcol);
 			ylim([0, 5]);
-
-			% For collating, we'll calc the peak pos&sizes
-			[peakvalraw, peakposraw] = max(ploty);
-			peakpos(fromn,whichn) = plotx(peakposraw) / RefreshRate;
-			peakval(fromn,whichn) = peakvalraw;
 		end;
 		title(sprintf('Bird %i: exp(kernels) %s', whichn, runlabel));
 		legend('from 1', 'from 2', 'from 3', 'from 4', 'location', 'northeast');
@@ -140,11 +155,29 @@ end
 
 
 if csvoutpath
-	% TODO - refactor the "plotdata" stuff out of zf4f_glm_each and put it in a separate statsgetter func file
-	%  2d stats: peak posses, peak mags
-	%  1d stats: num calls
-	%  0d stats: likelihood under fitted model
-	disp('           TODO');
+	outfnamestem = sprintf('%s/zf4f_glm_stats_%s', csvoutpath, runlabel);
+	csvfp_0d = fopen(sprintf('%s_0d.csv', outfnamestem), 'w');
+	csvfp_1d = fopen(sprintf('%s_1d.csv', outfnamestem), 'w');
+	csvfp_2d = fopen(sprintf('%s_2d.csv', outfnamestem), 'w');
+	% headers
+	fprintf(csvfp_0d, 'runname,neglogli\n');
+	fprintf(csvfp_1d, 'runname,individ,numcalls\n');
+	fprintf(csvfp_2d, 'runnname,frm,too,peakval,peaklag\n');
+	% data
+	fprintf(csvfp_0d, '%s,%g\n', runlabel, neglogli);
+	for whichn = 1:4
+		fprintf(csvfp_1d, '%s,%i,%i\n', runlabel, whichn, numcalls(whichn));
+		for fromn = 1:4
+			fprintf(csvfp_2d, '%s,%i,%i,%g,%g\n', runlabel, fromn, whichn, peakval(fromn,whichn), 1/peakpos(fromn,whichn));
+
+		end
+	end
+	fflush(csvfp_0d);
+	fclose(csvfp_0d);
+	fflush(csvfp_1d);
+	fclose(csvfp_1d);
+	fflush(csvfp_2d);
+	fclose(csvfp_2d);
 	sleep(2);
 else
 	disp '  (not writing csv)';

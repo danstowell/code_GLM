@@ -40,15 +40,15 @@ for whichseq=1:size(seqlists, 2)
 
 	outfnamestem = sprintf('zf4f_glm_evolution_%s', seqlist{1});
 
-	csvfname = sprintf('%s_indi.csv', outfnamestem);
+	csvfname = sprintf('outcsv/%s_1d.csv', outfnamestem);
 	disp(csvfname);
-	csvfp_indi = fopen(csvfname, 'w');
-	fprintf(csvfp_indi, 'runname,individ,numcalls\n');
+	csvfp_1d = fopen(csvfname, 'w');
+	fprintf(csvfp_1d, 'runname,individ,numcalls\n');
 
-	csvfname = sprintf('%s_pair.csv', outfnamestem);
+	csvfname = sprintf('outcsv/%s_2d.csv', outfnamestem);
 	disp(csvfname);
-	csvfp_pair = fopen(csvfname, 'w');
-	fprintf(csvfp_pair, 'runnname,frm,too,peakval,peaklag\n');
+	csvfp_2d = fopen(csvfname, 'w');
+	fprintf(csvfp_2d, 'runnname,frm,too,peakval,peaklag\n');
 
 	h = figure(4);
 	clf();
@@ -119,17 +119,17 @@ for whichseq=1:size(seqlists, 2)
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		% write csv data
 		for whichsess=1:4
-			fprintf(csvfp_indi, '%s,%i,%i\n', oursetses{whichsess}, whichn, plotdata_num(whichsess));
+			fprintf(csvfp_1d, '%s,%i,%i\n', oursetses{whichsess}, whichn, plotdata_num(whichsess));
 			for fromn=1:4
-				fprintf(csvfp_pair, '%s,%i,%i,%g,%g\n', oursetses{whichsess},fromn, whichn, plotdata_val(whichsess, fromn), 1/plotdata_pos(whichsess, fromn));
+				fprintf(csvfp_2d, '%s,%i,%i,%g,%g\n', oursetses{whichsess},fromn, whichn, plotdata_val(whichsess, fromn), 1/plotdata_pos(whichsess, fromn));
 			end;
 		end;
 
 	end;
-	saveas(h, sprintf('%s.png', outfnamestem));
-	fflush(csvfp_indi);
-	fflush(csvfp_pair);
-	fclose(csvfp_indi);
-	fclose(csvfp_pair);
+	saveas(h, sprintf('outplot/%s.png', outfnamestem));
+	fflush(csvfp_1d);
+	fflush(csvfp_2d);
+	fclose(csvfp_1d);
+	fclose(csvfp_2d);
 end;
 

@@ -8,5 +8,5 @@ printf('testscript_GLM_zf4f(%s, %s, %s, %i, %i)\n', dataname, variantname, mat2s
 runlabel = sprintf('%s%s', dataname, variantname);
 csvpath = sprintf('~/git/stored_docs/python/zftranscribe/output/annotreconciledproofed/zcompiled_%s.csv', dataname);
 
-[numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, '.', '.');  % TODO maybe plotpath and csvoutpath arg?
+[numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, indexmapper, startsecs, endsecs, 'outplot', 'outcsv');  % TODO maybe plotpath and csvoutpath as args?
 
