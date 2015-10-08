@@ -120,9 +120,9 @@ tspdata = sortrows(tspdata);
 
 % write out a CSV file of the generated timestamps
 csvfp = fopen('data_simulate_coupled_network.csv', 'w');
-fprintf(csvfp, 'time,individ,dursecs\n');
+fprintf(csvfp, 'time,dursecs,individ\n');
 for row=tspdata'
-	fprintf(csvfp, '%g,%i,%g\n', row(1), row(2), 0.1);
+	fprintf(csvfp, '%g,%g,%i\n', row(1), 0.1, row(2)-1);
 end
 fclose(csvfp);
 
