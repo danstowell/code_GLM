@@ -118,7 +118,7 @@ if plotpath
 
 	legendargs = cell(k+2,1);
 	for whichn = 1:k
-		legendargs{whichn} = sprintf('from %i', whichn);
+		legendargs{whichn} = sprintf('to %i', whichn);
 	end
 	legendargs{k+1} = 'location';
 	legendargs{k+2} = 'northeast';
@@ -127,11 +127,11 @@ if plotpath
 
 	numrows = ceil(sqrt(k));
 	numcols = ceil(k/numrows);
-	for whichn = 1:k
-		subplot(numrows, numcols, whichn); % ----------------------------------
+	for fromn = 1:k
+		subplot(numrows, numcols, fromn); % ----------------------------------
 		hold on;
-		for fromn = 1:k
-			plotcol = plotcols{mod(fromn-1, numel(plotcols))+1};
+		for whichn = 1:k
+			plotcol = plotcols{mod(whichn-1, numel(plotcols))+1};
 			if whichn==fromn
 				ihdata = gg{whichn}.ih;
 				plotcol = 'k--';
@@ -145,7 +145,7 @@ if plotpath
 			plot(plotx, ploty, plotcol);
 			ylim([0, 5]);
 		end;
-		title(sprintf('Bird %i: exp(kernels) %s', whichn, runlabel));
+		title(sprintf('Bird %i: exp(kernels) %s', fromn, runlabel));
 		legend(legendargs{1:k+2});
 		axis tight;
 	end;
