@@ -11,8 +11,6 @@ RefreshRate = 1;  % the "RefreshRate" is the samplerate of the stimulus (in Hz).
 plotcols = {'r', 'b', 'g', 'm', 'y'};
 
 numcalls = zeros(k,1);
-peakpos = zeros(k);
-peakval = zeros(k);
 
 printf('dofit_fromcsv_GLM_zf4f(%s, %s, %i, %s, %i, %i, %s, %s)\n', csvpath, runlabel, k, mat2str(indexmapper), startsecs, endsecs, plotpath, csvoutpath);
 
@@ -87,6 +85,10 @@ end
 
 
 %% --- Calc summary stats - used for csv and for returning ----------------------------
+peakpos = zeros(k);
+peakval = zeros(k);
+plotx = gg{1}.iht;
+kernels_discret = zeros(k,k,size(plotx));
 for whichn = 1:k
 	for fromn = 1:k
 		if whichn==fromn
@@ -96,11 +98,11 @@ for whichn = 1:k
 		else
 			ihdata = gg{whichn}.ih2(:, fromn);
 		end
-		plotx = gg{whichn}.iht;
 		ploty = exp(gg{whichn}.ihbas*ihdata);
 		[peakvalraw, peakposraw] = max(ploty);
 		peakpos(fromn,whichn) = plotx(peakposraw) / RefreshRate;
 		peakval(fromn,whichn) = peakvalraw;
+		kernels_discret(fromn,whichn,:) = ploty;
 	end
 end
 
@@ -133,16 +135,9 @@ if plotpath
 		for whichn = 1:k
 			plotcol = plotcols{mod(whichn-1, numel(plotcols))+1};
 			if whichn==fromn
-				ihdata = gg{whichn}.ih;
 				plotcol = 'k--';
-			elseif whichn<fromn
-				ihdata = gg{whichn}.ih2(:, fromn-1);
-			else
-				ihdata = gg{whichn}.ih2(:, fromn);
 			end
-			plotx = gg{whichn}.iht;
-			ploty = exp(gg{whichn}.ihbas*ihdata);
-			plot(plotx, ploty, plotcol);
+			plot(plotx, kernels_discret(fromn,whichn,:), plotcol);
 			ylim([0, 5]);
 		end;
 		title(sprintf('Bird %i: exp(kernels) %s', fromn, runlabel));
@@ -166,6 +161,7 @@ if csvoutpath
 	csvfp_0d = fopen(sprintf('%s_0d.csv', outfnamestem), 'w');
 	csvfp_1d = fopen(sprintf('%s_1d.csv', outfnamestem), 'w');
 	csvfp_2d = fopen(sprintf('%s_2d.csv', outfnamestem), 'w');
+	csvfp_kd = fopen(sprintf('%s_kernels_discret.csv', outfnamestem), 'w');
 	% headers
 	fprintf(csvfp_0d, 'runname,neglogli\n');
 	fprintf(csvfp_1d, 'runname,individ,numcalls\n');
@@ -176,6 +172,12 @@ if csvoutpath
 		fprintf(csvfp_1d, '%s,%i,%i\n', runlabel, whichn, numcalls(whichn));
 		for fromn = 1:k
 			fprintf(csvfp_2d, '%s,%i,%i,%g,%g\n', runlabel, fromn, whichn, peakval(fromn,whichn), peakpos(fromn,whichn));
+
+			fprintf(csvfp_kd, '%s,%i,%i', runlabel, fromn, whichn);
+			for xpos=1:size(plotx)
+				fprintf(csvfp_kd, ',%g', kernels_discret(fromn,whichn,xpos));
+			end
+			fprintf(csvfp_kd, '\n');
 		end
 	end
 	fflush(csvfp_0d);
@@ -184,6 +186,8 @@ if csvoutpath
 	fclose(csvfp_1d);
 	fflush(csvfp_2d);
 	fclose(csvfp_2d);
+	fflush(csvfp_kd);
+	fclose(csvfp_kd);
 	sleep(2);
 else
 	disp '  (not writing csv)';
