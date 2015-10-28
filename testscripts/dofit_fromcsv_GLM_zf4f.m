@@ -175,7 +175,7 @@ if csvoutpath
 	for whichn = 1:k
 		fprintf(csvfp_1d, '%s,%i,%i\n', runlabel, whichn, numcalls(whichn));
 		for fromn = 1:k
-			fprintf(csvfp_2d, '%s,%i,%i,%g,%g\n', runlabel, fromn, whichn, peakval(fromn,whichn), 1/peakpos(fromn,whichn));
+			fprintf(csvfp_2d, '%s,%i,%i,%g,%g\n', runlabel, fromn, whichn, peakval(fromn,whichn), peakpos(fromn,whichn));
 		end
 	end
 	fflush(csvfp_0d);
