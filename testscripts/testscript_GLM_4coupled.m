@@ -123,7 +123,7 @@ for whichn = 1:4
 	gg0.tsp = tsp{whichn};   % cell spike times (vector)
 	gg0.tsp2 = tsp(setdiff(1:4, whichn));  % spike trains from "coupled" cells (cell array of vectors)
 	gg0.tspi = 1; % 1st spike to use for computing likelihood (eg, can ignore 1st n spikes)
-	[gg{whichn}, negloglivalx] = MLfit_GLM(gg0, Stim, opts); % do ML (requires optimization toolbox)
+	[gg{whichn}, negloglivalx] = MLfit_GLM(gg0, Stim, 0, opts); % do ML (requires optimization toolbox)
 end
 
 

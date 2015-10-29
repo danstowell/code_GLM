@@ -1,9 +1,10 @@
-function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, plotpath, csvoutpath)
-% [peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, plotpath, csvoutpath)
+function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath)
+% [peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath)
 %
 % load some zf4f-format data and analyse "as if" it were cell spiking data. returns analysed data.
 % also does a plot and writes it to a file in the folder named by 'plotpath'. if 'plotpath' is '' or 0 it DOESN'T plot. to plot in cwd use '.'
 % 'csvoutpath' parameter is analogous, and is about writing CSV data out to file
+% 'regln' is regularisation strength. use 0 for no regln (ML rather than MAP), or maybe a val like 0.1
 
 global RefreshRate;
 RefreshRate = 1;  % the "RefreshRate" is the samplerate of the stimulus (in Hz). I don't currently use stimulus so I set it to 1. Below, "DTsim" sets the time-resultion used in the model.
@@ -12,7 +13,7 @@ plotcols = {'r', 'b', 'g', 'm', 'y'};
 
 numcalls = zeros(k,1);
 
-printf('dofit_fromcsv_GLM_zf4f(%s, %s, %i, %s, %i, %i, %s, %s)\n', csvpath, runlabel, k, mat2str(indexmapper), startsecs, endsecs, plotpath, csvoutpath);
+printf('dofit_fromcsv_GLM_zf4f(%s, %s, %i, %s, %i, %i, %g, %s, %s)\n', csvpath, runlabel, k, mat2str(indexmapper), startsecs, endsecs, regln, plotpath, csvoutpath);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load the CSV data
@@ -78,7 +79,7 @@ for whichn = 1:k
 	gg0.tsp = tsp{whichn};   % cell spike times (vector)
 	gg0.tsp2 = tsp(setdiff(1:k, whichn));  % spike trains from "coupled" cells (cell array of vectors)
 	gg0.tspi = 1; % 1st spike to use for computing likelihood (eg, can ignore 1st n spikes)
-	[gg{whichn}, neglogli_each] = MLfit_GLM(gg0, Stim, opts); % do ML (requires optimization toolbox)
+	[gg{whichn}, neglogli_each] = MLfit_GLM(gg0, Stim, regln, opts); % do ML (requires optimization toolbox)
 	printf('MLfit #%i gets neglogli %g\n', whichn, neglogli_each);
 	neglogli += neglogli_each;
 end
@@ -88,6 +89,8 @@ end
 peakpos = zeros(k);
 peakval = zeros(k);
 plotx = gg{1}.iht;
+disp 'time abscissa:';
+disp(plotx);
 kernels_discret = zeros(k,k,size(plotx));
 for whichn = 1:k
 	for fromn = 1:k

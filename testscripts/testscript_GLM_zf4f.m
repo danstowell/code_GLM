@@ -9,5 +9,6 @@ runlabel = sprintf('%s%s', dataname, variantname);
 csvpath = sprintf('~/git/stored_docs/python/zftranscribe/output/annotreconciledproofed/zcompiled_%s.csv', dataname);
 
 k = 4;
-[numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, 'outplot', 'outcsv');  % TODO maybe plotpath and csvoutpath as args?
+regln = 0.1; % NOTE default regularisation strength here
+[numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, 'outplot', 'outcsv');  % TODO maybe plotpath and csvoutpath as args?
 

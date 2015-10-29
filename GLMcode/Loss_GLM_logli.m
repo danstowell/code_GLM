@@ -1,5 +1,5 @@
-function [logli, dL, H] = Loss_GLM_logli(prs)
-% [neglogli, dL, H] = Loss_GLM_logli(prs)
+function [logli, dL, H] = Loss_GLM_logli(prs, regln)
+% [neglogli, dL, H] = Loss_GLM_logli(prs, regln)
 %
 % Compute negative log-likelihood of data undr the GLM model
 % (with standard linear parametrization of stimulus kernel);
@@ -10,6 +10,7 @@ function [logli, dL, H] = Loss_GLM_logli(prs)
 %   prs = [kprs - weights for stimulus kernel
 %          dc   - dc current injection
 %          ihprs - weights on post-spike current];
+%   regln = L2 regularisation weight. (zero is unregularised)
 % Outputs:
 %      logli = negative log likelihood of spike train
 %      dL = gradient with respect to prs
@@ -17,6 +18,10 @@ function [logli, dL, H] = Loss_GLM_logli(prs)
 
 
 etol = 1e-100;
+
+if nargin < 2
+	regln = 0;
+end
 
 % global vars for optimization
 global MSTM MMntrp SPNDS SPNDS2 OPRS RefreshRate 
@@ -176,3 +181,14 @@ for jch = 1:OPRS.nchunks
     end
     
 end
+
+% Regularisation applied to the likelihood, gradient and Hessian -----------
+if regln ~= 0
+	% if the form of the penalty is 0.5 * theta^T A theta, then you just add A theta to the gradient and A to the Hessian, and everything should work.
+	A = eye(nprs) * regln;   % A is the matrix of regln strengths
+	A(nktot+1, nktot+1) = 0; % ...except we do not regularise the DC parameter
+	logli += 0.5 * prs' * A * prs;    % note that "logli" is the negative log likelihood...
+	dL    += A * prs;
+	H     += A;
+end
+

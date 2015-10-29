@@ -138,7 +138,7 @@ gg0.tspi = 1;
 
 % Do ML estimation of model params
 opts = {'display', 'iter', 'maxiter', 100};
-[gg1, negloglival] = MLfit_GLM(gg0,Stim,opts); % do ML (requires optimization toolbox)
+[gg1, negloglival] = MLfit_GLM(gg0,Stim,0,opts); % do ML (requires optimization toolbox)
 
 
 %% 5. Fit GLM ("bilinear stim filter version") via max likelihood

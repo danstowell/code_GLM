@@ -115,7 +115,7 @@ gg0.tspi = 1;   % First spike to use (you can ask it to ignore the first "n" spi
 
 % Do ML estimation of model params
 opts = {'display', 'iter', 'maxiter', 100};
-[gg, negloglival] = MLfit_GLM(gg0,Stim,opts); % do ML (requires optimization toolbox)
+[gg, negloglival] = MLfit_GLM(gg0,Stim,0,opts); % do ML (requires optimization toolbox)
 
 
 %% 5. Plot results ======================================================

@@ -142,7 +142,7 @@ gg0.tspi = 1; % 1st spike to use for computing likelihood (eg, can ignore 1st n 
 % Do ML estimation of model params
 fprintf('Fitting first neuron\n');
 opts = {'display', 'iter', 'maxiter', 100};
-[gg1, negloglival1] = MLfit_GLM(gg0,Stim,opts); % do ML (requires optimization toolbox)
+[gg1, negloglival1] = MLfit_GLM(gg0,Stim,0,opts); % do ML (requires optimization toolbox)
 
 
 %% Fit second cell
@@ -152,7 +152,7 @@ gg0b.tsp2 = tsp(1);  % spike trains from "coupled" cells (cell array of vectors)
 gg0b.kt = inv(gg0.ktbas'*gg0.ktbas)*gg0.ktbas'*sta2; % Project STA2 into basis 
 gg0b.k = gg0b.ktbas*gg0b.kt; % Project STA onto basis for fitting
 fprintf('\nFitting second neuron\n');
-[gg2, negloglival2] = MLfit_GLM(gg0b,Stim,opts); % do ML (requires optimization toolbox)
+[gg2, negloglival2] = MLfit_GLM(gg0b,Stim,0,opts); % do ML (requires optimization toolbox)
 
 
 %% --- Plot results ----------------------------
