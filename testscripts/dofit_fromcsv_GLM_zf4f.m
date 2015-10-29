@@ -89,8 +89,6 @@ end
 peakpos = zeros(k);
 peakval = zeros(k);
 plotx = gg{1}.iht;
-disp 'time abscissa:';
-disp(plotx);
 kernels_discret = zeros(k,k,size(plotx));
 for whichn = 1:k
 	for fromn = 1:k
@@ -164,6 +162,7 @@ if csvoutpath
 	csvfp_0d = fopen(sprintf('%s_0d.csv', outfnamestem), 'w');
 	csvfp_1d = fopen(sprintf('%s_1d.csv', outfnamestem), 'w');
 	csvfp_2d = fopen(sprintf('%s_2d.csv', outfnamestem), 'w');
+	csvfp_tx = fopen(sprintf('%s_kernels_timeaxis.csv', outfnamestem), 'w');
 	csvfp_kd = fopen(sprintf('%s_kernels_discret.csv', outfnamestem), 'w');
 	% headers
 	fprintf(csvfp_0d, 'runname,neglogli\n');
@@ -183,6 +182,11 @@ if csvoutpath
 			fprintf(csvfp_kd, '\n');
 		end
 	end
+	fprintf(csvfp_tx, '%g', plotx(1));
+	for xpos=2:size(plotx)
+		fprintf(csvfp_tx, ',%g', plotx(xpos));
+	end
+	fprintf(csvfp_tx, '\n');
 	fflush(csvfp_0d);
 	fclose(csvfp_0d);
 	fflush(csvfp_1d);
@@ -191,7 +195,9 @@ if csvoutpath
 	fclose(csvfp_2d);
 	fflush(csvfp_kd);
 	fclose(csvfp_kd);
-	sleep(2);
+	fflush(csvfp_tx);
+	fclose(csvfp_tx);
+	sleep(2.5);
 else
 	disp '  (not writing csv)';
 end
