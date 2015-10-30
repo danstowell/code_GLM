@@ -1,10 +1,11 @@
-function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath)
+function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath, resimuldur)
 % [peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath)
 %
 % load some zf4f-format data and analyse "as if" it were cell spiking data. returns analysed data.
 % also does a plot and writes it to a file in the folder named by 'plotpath'. if 'plotpath' is '' or 0 it DOESN'T plot. to plot in cwd use '.'
 % 'csvoutpath' parameter is analogous, and is about writing CSV data out to file
 % 'regln' is regularisation strength. use 0 for no regln (ML rather than MAP), or maybe a val like 0.1
+% 'resimuldur' is 0 if you don't want to re-simulate from the fitted model; otherwise the num seconds worth of data to synthesise
 
 global RefreshRate;
 RefreshRate = 1;  % the "RefreshRate" is the samplerate of the stimulus (in Hz). I don't currently use stimulus so I set it to 1. Below, "DTsim" sets the time-resultion used in the model.
@@ -13,7 +14,7 @@ plotcols = {'r', 'b', 'g', 'm', 'y'};
 
 numcalls = zeros(k,1);
 
-printf('dofit_fromcsv_GLM_zf4f(%s, %s, %i, %s, %i, %i, %g, %s, %s)\n', csvpath, runlabel, k, mat2str(indexmapper), startsecs, endsecs, regln, plotpath, csvoutpath);
+printf('dofit_fromcsv_GLM_zf4f(%s, %s, %i, %s, %i, %i, %g, %s, %s, %i)\n', csvpath, runlabel, k, mat2str(indexmapper), startsecs, endsecs, regln, plotpath, csvoutpath, resimuldur);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load the CSV data
@@ -197,6 +198,65 @@ if csvoutpath
 	fclose(csvfp_kd);
 	fflush(csvfp_tx);
 	fclose(csvfp_tx);
+
+	if resimuldur > 0
+		disp("*** NOTE: resimulation from fitted model. not validated yet.");
+
+		% copying fitted parameters into simulation struct
+		%disp('dc pre');
+		%disp(ggsim.dc);
+		for whichn = 1:k
+			ggsim.dc(whichn) = gg{whichn}.dc;
+		end
+		%disp('dc fitted');
+		%disp(ggsim.dc);
+		for whichn = 1:k
+			for fromn = 1:k
+				%disp(size(ggsim.ih(:,fromn,whichn)));
+				%disp(size(gg{whichn}.ih));
+				%disp(size(gg{whichn}.ih2));
+				
+				if whichn==fromn
+					kernelprs = gg{whichn}.ih;
+				elseif whichn < fromn
+					kernelprs = gg{whichn}.ih2(:,fromn-1);
+				else
+					kernelprs = gg{whichn}.ih2(:,fromn);
+				end
+				kernel = gg{whichn}.ihbas * kernelprs;
+
+				ggsim.ih(:,fromn,whichn) = kernel;
+			end
+		end
+
+		swid = 1;  % Stimulus width  (pixels).  Must match # pixels in stim filter
+		Stim = zeros(resimuldur * RefreshRate,swid);
+		[tsp, vmem, Ispk] = simGLMcpl(ggsim, Stim);  % Simulate GLM response
+		% since this is a multi thing, it returns "tsp" as a cell array of 3 items, each one being a list of timestamps
+
+		% convert the tsp to a sortable list
+		for whichtsp=1:size(tsp, 2)
+			atsp = tsp{whichtsp};
+			atsp = horzcat(atsp, repmat(whichtsp, size(atsp), 1));
+			if whichtsp==1
+				tspdata = atsp;
+			else
+				tspdata = vertcat(tspdata, atsp);
+			end;
+		end;
+
+		tspdata = sortrows(tspdata);
+
+		% write out a CSV file of the generated timestamps
+		csvfp = fopen(sprintf('%s_resimulated.csv', outfnamestem), 'w');
+		fprintf(csvfp, 'time,dursecs,individ\n');
+		for row=tspdata'
+			fprintf(csvfp, '%g,%g,%i\n', row(1), 0.1, row(2)-1);
+		end
+		fclose(csvfp);
+
+	end
+
 	sleep(2.5);
 else
 	disp '  (not writing csv)';

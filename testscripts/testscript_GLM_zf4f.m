@@ -10,5 +10,7 @@ csvpath = sprintf('~/git/stored_docs/python/zftranscribe/output/annotreconciledp
 
 k = 4;
 regln = 0.1; % NOTE default regularisation strength here
-[numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, 'outplot', 'outcsv');  % TODO maybe plotpath and csvoutpath as args?
+[numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, 'outplot', 'outcsv', 0);
+% TODO maybe plotpath and csvoutpath as args?
+% TODO maybe allow this to do the resynth? maybe as an arg?
 
