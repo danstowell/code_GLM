@@ -34,11 +34,14 @@ end
 seqlists = { ...
 {'session2_15', {'session2a1', 'session2a2', 'session2b1', 'session2b2'}}, ...
 {'session3_15', {'session3a1', 'session3a2', 'session3b1', 'session3b2'}}, ...
+{'session2full60', {'session2full'}}, ...
+{'session3full60', {'session3full'}}, ...
 };
 
 for whichseq=1:size(seqlists, 2)
 	seqlist = seqlists{whichseq};
 	oursetses = seqlist{2};
+	numsesses = length(oursetses);
 
 	outfnamestem = sprintf('zf4f_glm_evolution_%s', seqlist{1});
 
@@ -56,11 +59,11 @@ for whichseq=1:size(seqlists, 2)
 	clf();
 	for whichn=1:4
 		% plot peak level and peak time
-		plotdata_num = zeros(4,1);
-		plotdata_pos = zeros(4);
-		plotdata_val = zeros(4);
+		plotdata_num = zeros(numsesses,1);
+		plotdata_pos = zeros(numsesses,4);
+		plotdata_val = zeros(numsesses,4);
 		for fromn=1:4
-			for whichsess=1:4
+			for whichsess=1:numsesses
 				plotdata_num(whichsess)        =     numcalls.(oursetses{whichsess})(whichn);
 				plotdata_pos(whichsess, fromn) = 1 / max(1e-1, resultspos.(oursetses{whichsess})(fromn, whichn));
 				plotdata_val(whichsess, fromn) =     resultsval.(oursetses{whichsess})(fromn, whichn);
@@ -120,7 +123,7 @@ for whichseq=1:size(seqlists, 2)
 
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		% write csv data
-		for whichsess=1:4
+		for whichsess=1:numsesses
 			fprintf(csvfp_1d, '%s,%i,%i\n', oursetses{whichsess}, whichn, plotdata_num(whichsess));
 			for fromn=1:4
 				fprintf(csvfp_2d, '%s,%i,%i,%g,%g\n', oursetses{whichsess},fromn, whichn, plotdata_val(whichsess, fromn), 1/plotdata_pos(whichsess, fromn));
