@@ -1,8 +1,6 @@
 
 % script to run the GLM fitting on a sequence of zf4f 15-min data chunks
 
-dofit = 1;   % if 0 it doesn't rerun the fit, but uses whatever we got in the last run
-
 plotcols = {'r', 'b', 'g', 'm'};
 
 setses = { ...
@@ -18,16 +16,15 @@ struct('dataname', 'session2full', 'variantname', '', 'indexmapper', [4,3,2,1], 
 struct('dataname', 'session3full', 'variantname', '', 'indexmapper', [1,2,3,4], 'startsecs',  350, 'endsecs', 3950), ...
 };
 
-if dofit
-	numcalls   = struct();
-	resultspos = struct();
-	resultsval = struct();
-	negloglis  = struct();
-	for whichset=1:size(setses,2)
-		d = setses{whichset};
-		runname = sprintf('%s%s', d.dataname, d.variantname);
-		[numcalls.(runname), resultspos.(runname), resultsval.(runname), negloglis.(runname)] = testscript_GLM_zf4f(d.dataname, d.variantname, d.indexmapper, d.startsecs, d.endsecs);
-	end
+numcalls   = struct();
+resultspos = struct();
+resultsval = struct();
+negloglis  = struct();
+for whichset=1:size(setses,2)
+	d = setses{whichset};
+	runname = sprintf('%s%s', d.dataname, d.variantname);
+	testscript_GLM_zf4f(d.dataname, d.variantname, d.indexmapper, d.startsecs, d.endsecs, 'sof');
+	[numcalls.(runname), resultspos.(runname), resultsval.(runname), negloglis.(runname)] = testscript_GLM_zf4f(d.dataname, d.variantname, d.indexmapper, d.startsecs, d.endsecs);
 end
 
 
