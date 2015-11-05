@@ -1,5 +1,5 @@
-function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath, resimuldur)
-% [peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath)
+function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath, resimuldur, nlfun)
+% [peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath, resimuldur, nlfun)
 %
 % load some zf4f-format data and analyse "as if" it were cell spiking data. returns analysed data.
 % also does a plot and writes it to a file in the folder named by 'plotpath'. if 'plotpath' is '' or 0 it DOESN'T plot. to plot in cwd use '.'
@@ -18,6 +18,10 @@ printf('dofit_fromcsv_GLM_zf4f(%s, %s, %i, %s, %i, %i, %g, %s, %s, %i)\n', csvpa
 
 if regln == -1
 	regln = 0.01
+end
+
+if nargin < 11
+	nlfun = @expfun
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,6 +54,7 @@ for whichn = 1:k
 	ggsimsolo{whichn} = makeSimStruct_GLM(nkt,DTsim);  % Create GLM struct with default params
 end;
 ggsim = makeSimStruct_GLMcpl(ggsimsolo{1:k});
+ggsim.nlfun = nlfun;
 
 
 %% 3. Set up the "stimulus" appropriately (here it's zeros)
@@ -80,6 +85,7 @@ for whichn = 1:k
 	% NOTE: the call above imposes an "absref" (absolute refactory period) of 10 * DTsim. Happily this is extremely reasonable in the zf4f case.
 	gg0.ih = gg0.ih*0;  % Initialize to zero
 	gg0.dc = gg0.dc*0;  % Initialize to zero
+	gg0.nlfun = nlfun;
 
 	gg0.tsp = tsp{whichn};   % cell spike times (vector)
 	gg0.tsp2 = tsp(setdiff(1:k, whichn));  % spike trains from "coupled" cells (cell array of vectors)
