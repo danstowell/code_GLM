@@ -4,7 +4,7 @@ function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath
 % load some zf4f-format data and analyse "as if" it were cell spiking data. returns analysed data.
 % also does a plot and writes it to a file in the folder named by 'plotpath'. if 'plotpath' is '' or 0 it DOESN'T plot. to plot in cwd use '.'
 % 'csvoutpath' parameter is analogous, and is about writing CSV data out to file
-% 'regln' is regularisation strength. use 0 for no regln (ML rather than MAP), or maybe a val like 0.1
+% 'regln' is regularisation strength. use 0 for no regln (ML rather than MAP), or maybe a val like 0.1, or -1 for default setting.
 % 'resimuldur' is 0 if you don't want to re-simulate from the fitted model; otherwise the num seconds worth of data to synthesise
 
 global RefreshRate;
@@ -15,6 +15,10 @@ plotcols = {'r', 'b', 'g', 'm', 'y'};
 numcalls = zeros(k,1);
 
 printf('dofit_fromcsv_GLM_zf4f(%s, %s, %i, %s, %i, %i, %g, %s, %s, %i)\n', csvpath, runlabel, k, mat2str(indexmapper), startsecs, endsecs, regln, plotpath, csvoutpath, resimuldur);
+
+if regln == -1
+	regln = 0.01
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load the CSV data
