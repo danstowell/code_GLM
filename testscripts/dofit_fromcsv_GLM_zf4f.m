@@ -17,11 +17,11 @@ numcalls = zeros(k,1);
 printf('dofit_fromcsv_GLM_zf4f(%s, %s, %i, %s, %i, %i, %g, %s, %s, %i)\n', csvpath, runlabel, k, mat2str(indexmapper), startsecs, endsecs, regln, plotpath, csvoutpath, resimuldur);
 
 if regln == -1
-	regln = 0.01
+	regln = 0.01;
 end
 
 if nargin < 11
-	nlfun = @expfun
+	nlfun = @expfun;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
