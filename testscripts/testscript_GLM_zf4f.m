@@ -1,26 +1,18 @@
-function [numcalls, peakpos, peakval, neglogli] = testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs, nonlin)
+function [numcalls, peakpos, peakval, neglogli] = testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs, nlfun)
 % [peakpos, peakval] = testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs)
 %
 % load some zf4f data and analyse "as if" it were cell spiking data. writes out a plot.
 
 if nargin < 6
-	nonlin = 'exp'
+	nlfun = @softplus
 end
 
-printf('testscript_GLM_zf4f(%s, %s, %s, %i, %i)\n', dataname, variantname, mat2str(indexmapper), startsecs, endsecs);
+printf('testscript_GLM_zf4f(%s, %s, %s, %i, %i, %s)\n', dataname, variantname, mat2str(indexmapper), startsecs, endsecs, func2str(nlfun));
 
-runlabel = sprintf('%s%s', dataname, variantname);
-if nonlin == 'exp'
-	nlfun = @expfun;
-elseif nonlin == 'sof'
-	nlfun = @softplus;
-	runlabel = sprintf('%s%s', runlabel, nonlin);
-else
-	error('Unknown nonlin choice "%s"', nonlin);
-end
+runlabel = sprintf('%s%s%s', dataname, variantname, func2str(nlfun)(1:3));
 csvpath = sprintf('~/git/stored_docs/python/zftranscribe/output/annotreconciledproofed/zcompiled_%s.csv', dataname);
 
-disp(sprintf('Fitting with nonlin %s on %s', nonlin, csvpath));
+disp(sprintf('Fitting with nonlin %s on %s', func2str(nlfun), csvpath));
 
 k = 4;
 regln = -1; % NOTE default regularisation strength here

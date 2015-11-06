@@ -21,7 +21,7 @@ if regln == -1
 end
 
 if nargin < 11
-	nlfun = @expfun;
+	nlfun = @softplus;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,7 +110,7 @@ for whichn = 1:k
 		else
 			ihdata = gg{whichn}.ih2(:, fromn);
 		end
-		ploty = exp(gg{whichn}.ihbas*ihdata);
+		ploty = nlfun(gg{whichn}.ihbas*ihdata);
 		[peakvalraw, peakposraw] = max(ploty);
 		peakpos(fromn,whichn) = plotx(peakposraw) / RefreshRate;
 		peakval(fromn,whichn) = peakvalraw;
@@ -152,7 +152,7 @@ if plotpath
 			plot(plotx, kernels_discret(fromn,whichn,:), plotcol);
 			ylim([0, 5]);
 		end;
-		title(sprintf('Bird %i: exp(kernels) %s', fromn, runlabel));
+		title(sprintf('Bird %i: %s(kernels) %s', fromn, func2str(nlfun), runlabel));
 		legend(legendargs{1:k+2});
 		axis tight;
 	end;
