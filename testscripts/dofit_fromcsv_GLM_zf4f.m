@@ -120,7 +120,7 @@ end
 
 %% --- Plot results ----------------------------
 if plotpath
-	h = figure(3);
+	h = figure();
 	clf;
 
 	set (h,'papertype', '<custom>');
