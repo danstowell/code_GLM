@@ -110,7 +110,9 @@ for whichn = 1:k
 		else
 			ihdata = gg{whichn}.ih2(:, fromn);
 		end
-		ploty = nlfun(gg{whichn}.ihbas*ihdata);
+		% TODO experimenting with showing the un-warped kernels
+		ploty = gg{whichn}.ihbas*ihdata;
+		%ploty = nlfun(gg{whichn}.ihbas*ihdata);
 		[peakvalraw, peakposraw] = max(ploty);
 		peakpos(fromn,whichn) = plotx(peakposraw) / RefreshRate;
 		peakval(fromn,whichn) = peakvalraw;
@@ -141,6 +143,8 @@ if plotpath
 
 	numrows = ceil(sqrt(k));
 	numcols = ceil(k/numrows);
+	ymin = -0.5;
+	ymax =  1;
 	for fromn = 1:k
 		subplot(numrows, numcols, fromn); % ----------------------------------
 		hold on;
@@ -148,20 +152,25 @@ if plotpath
 			plotcol = plotcols{mod(whichn-1, numel(plotcols))+1};
 			if whichn==fromn
 				plotcol = 'k--';
+			else
+				% we only allow self-other kernels to stretch the y-axis
+				ymin = min(ymin, min(kernels_discret(fromn,whichn,:)));
+				ymax = max(ymax, max(kernels_discret(fromn,whichn,:)));
 			end
 			plot(plotx, kernels_discret(fromn,whichn,:), plotcol);
-			ylim([0, 5]);
 		end;
 		title(sprintf('Bird %i: %s(kernels) %s', fromn, func2str(nlfun), runlabel));
 		legend(legendargs{1:k+2});
 		axis tight;
+		ylim([ymin, ymax]);
 	end;
 	xlabel('time (frames)')
 
 	disp(sprintf('Saving %s/zf4f_glm_kernels_%s.png', plotpath, runlabel));
 	saveas(h, sprintf('%s/zf4f_glm_kernels_%s.png', plotpath, runlabel));
 
-	sleep(2);
+	sleep(1);
+	close();
 else
 	disp '  (not plotting)';
 end
