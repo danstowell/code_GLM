@@ -187,7 +187,7 @@ if csvoutpath
 	% headers
 	fprintf(csvfp_0d, 'runname,neglogli\n');
 	fprintf(csvfp_1d, 'runname,individ,numcalls\n');
-	fprintf(csvfp_2d, 'runname,frm,too,peakval,peaklag\n');
+	fprintf(csvfp_2d, 'runname,frm,too,peakval,peakpos\n');
 	% data
 	fprintf(csvfp_0d, '%s,%g\n', runlabel, neglogli);
 	for whichn = 1:k

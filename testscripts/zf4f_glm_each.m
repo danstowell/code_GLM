@@ -54,7 +54,7 @@ for whichnlf = 1:length(nlfuns)
 		csvfname = sprintf('outcsv/%s_2d.csv', outfnamestem);
 		disp(csvfname);
 		csvfp_2d = fopen(csvfname, 'w');
-		fprintf(csvfp_2d, 'runnname,frm,too,peakval,peaklag\n');
+		fprintf(csvfp_2d, 'runnname,frm,too,peakval,peakpos\n');
 
 		h = figure(4);
 		clf();
