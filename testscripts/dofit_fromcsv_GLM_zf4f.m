@@ -113,9 +113,14 @@ for whichn = 1:k
 		% TODO experimenting with showing the un-warped kernels
 		ploty = gg{whichn}.ihbas*ihdata;
 		%ploty = nlfun(gg{whichn}.ihbas*ihdata);
-		[peakvalraw, peakposraw] = max(ploty);
+		%[ignore_this, peakposraw] = max(abs(ploty));  % NOTE: the abs here is to detect pos and neg peaks, thus needs un-warped
+		if fromn==whichn
+			[ignore_this, peakposraw] = max(-ploty);  % negative so that for self-self it's the inhibitions we're looking at
+		else
+			[ignore_this, peakposraw] = max(ploty);
+		endif
 		peakpos(fromn,whichn) = plotx(peakposraw) / RefreshRate;
-		peakval(fromn,whichn) = peakvalraw;
+		peakval(fromn,whichn) = ploty(peakposraw); % re-grab the peakval, because now we don't want the abs
 		kernels_discret(fromn,whichn,:) = ploty;
 	end
 end
