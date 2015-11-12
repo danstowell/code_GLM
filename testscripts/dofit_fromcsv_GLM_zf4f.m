@@ -163,7 +163,7 @@ if plotpath
 			end
 			plot(plotx, kernels_discret(fromn,whichn,:), plotcol);
 		end;
-		title(sprintf('Bird %i: %s(kernels) %s', fromn, func2str(nlfun), runlabel));
+		title(sprintf('Bird %i: kernels (%s) %s', fromn, func2str(nlfun), runlabel));
 		legend(legendargs{1:k+2});
 		axis tight;
 		ylim([ymin, ymax]);
