@@ -32,7 +32,7 @@ nlinF = @exp;
 ihbasprs.ncols = 8;  % Number of basis vectors for post-spike kernel
 ihbasprs.hpeaks = [.1 2];  % Peak location for first and last vectors
 ihbasprs.b = .5;  % How nonlinear to make spacings
-ihbasprs.absref = .1; % absolute refractory period 
+ihbasprs.absref = 0; %.1; % absolute refractory period 
 [iht,ihbas,ihbasis] = makeBasis_PostSpike(ihbasprs,dt);
 ih = ihbasis*[-10 -5 0 2 -2 0 0 0]';  % h current
 
