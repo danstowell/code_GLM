@@ -82,7 +82,6 @@ opts = {'display', 'iter', 'maxiter', 100};
 for whichn = 1:k
 	%fprintf('Fitting bird #%i\n', whichn);
 	gg0 = makeFittingStruct_GLM(stas{whichn},DTsim,ggsim,whichn);  % Initialize params for fitting struct w/ sta
-	% NOTE: the call above imposes an "absref" (absolute refactory period) of 10 * DTsim. Happily this is extremely reasonable in the zf4f case.
 	gg0.ih = gg0.ih*0;  % Initialize to zero
 	gg0.dc = gg0.dc*0;  % Initialize to zero
 	gg0.nlfun = nlfun;
