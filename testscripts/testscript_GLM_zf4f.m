@@ -17,7 +17,7 @@ csvpath = sprintf('~/git/stored_docs/python/zftranscribe/output/annotreconciledp
 
 disp(sprintf('Fitting with nonlin %s on %s', func2str(nlfun), csvpath));
 
-k = 4;
+k = length(indexmapper);
 regln = -1; % NOTE default regularisation strength here
 [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, 'outplot', 'outcsv', resimuldur, nlfun);
 
