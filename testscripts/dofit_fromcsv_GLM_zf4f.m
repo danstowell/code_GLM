@@ -59,6 +59,9 @@ ggsim.nlfun = nlfun;
 
 %% 3. Set up the "stimulus" appropriately (here it's zeros)
 slen = round((endsecs_actual-startsecs) * RefreshRate);  % Stimulus length (frames)
+if slen==0
+	error('Stim is zero length - no data in selected time window?');
+end
 swid = 1;
 Stim = zeros(slen,swid);
 
