@@ -188,6 +188,7 @@ if csvoutpath
 	csvfp_2d = fopen(sprintf('%s_2d.csv', outfnamestem), 'w');
 	csvfp_tx = fopen(sprintf('%s_kernels_timeaxis.csv', outfnamestem), 'w');
 	csvfp_kd = fopen(sprintf('%s_kernels_discret.csv', outfnamestem), 'w');
+	csvfp_ba = fopen(sprintf('%s_basis.csv', outfnamestem), 'w');
 	% headers
 	fprintf(csvfp_0d, 'runname,neglogli\n');
 	fprintf(csvfp_1d, 'runname,individ,numcalls\n');
@@ -211,6 +212,12 @@ if csvoutpath
 		fprintf(csvfp_tx, ',%g', plotx(xpos));
 	end
 	fprintf(csvfp_tx, '\n');
+	for whichbas=1:size(gg{1}.ihbas, 2)
+		for xpos=2:size(plotx)
+			fprintf(csvfp_ba, ',%g', gg{1}.ihbas(xpos, whichbas));
+		end
+		fprintf(csvfp_ba, '\n');
+	end
 	fflush(csvfp_0d);
 	fclose(csvfp_0d);
 	fflush(csvfp_1d);
@@ -221,6 +228,8 @@ if csvoutpath
 	fclose(csvfp_kd);
 	fflush(csvfp_tx);
 	fclose(csvfp_tx);
+	fflush(csvfp_ba);
+	fclose(csvfp_ba);
 
 	if resimuldur > 0
 		disp("*** NOTE: resimulation from fitted model. not validated yet.");
