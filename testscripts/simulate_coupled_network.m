@@ -26,8 +26,10 @@ ggsimcpl = makeSimStruct_GLMcpl(ggsim1, ggsim2, ggsim3);
 % Let's construct an A->B->C influence structure, with manually-designed message-passing and self-inhibiting kernels
 [iht,ihbas,ihbasis] = makeBasis_PostSpike(ggsimcpl.ihbasprs, ggsimcpl.dt);
 %toself      = ihbasis*[0 0 -1 0 0 0 0 0]' * 10;
-toself      = ihbasis*[0 0 -1 -0.8 -0.6 -0.4 -0.2 0]' * 10;
-toneighbour = ihbasis*[0 0 0.2 0.2 0.9 0.2 0.2 0]' * 10;
+%toself      = ihbasis*[0 0 -1 -0.8 -0.6 -0.4 -0.2 0]' * 10;
+%toneighbour = ihbasis*[0 0 0.2 0.2 0.9 0.2 0.2 0]' * 10;
+toself      = ihbasis*[0 0 0 0 -1 -1 -0.8 -0.8 -0.6 -0.6 -0.4 -0.4 -0.2 -0.2 0 0]' * 10;
+toneighbour = ihbasis*[0 0 0 0 0.2 0.2 0.2 0.2 0.9 0.9 0.2 0.2 0.2 0.2 0 0]' * 10;
 %plot(ggsimcpl.iht, toneighbour);
 
 %disp(ggsimcpl);
