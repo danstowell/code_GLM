@@ -68,7 +68,6 @@ Stim = zeros(slen,swid);
 
 
 
-
 % -------------- Compute STAs------------
 nsp = length(tsp{1});
 stas = cell(k,1);
@@ -215,8 +214,11 @@ if csvoutpath
 		fprintf(csvfp_tx, ',%g', plotx(xpos));
 	end
 	fprintf(csvfp_tx, '\n');
+	%disp("gg{1}.ihbas:");
+	%disp(gg{1}.ihbas);
 	for whichbas=1:size(gg{1}.ihbas, 2)
-		for xpos=2:size(plotx)
+		fprintf(        csvfp_ba, '%g',  gg{1}.ihbas(2   , whichbas));
+		for xpos=3:size(plotx)
 			fprintf(csvfp_ba, ',%g', gg{1}.ihbas(xpos, whichbas));
 		end
 		fprintf(csvfp_ba, '\n');
