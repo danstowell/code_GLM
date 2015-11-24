@@ -30,7 +30,7 @@ nlinF = @exp;
 
 % --- Make basis for post-spike (h) current ------
 ihbasprs.ncols = 16;  % Number of basis vectors for post-spike kernel
-ihbasprs.hpeaks = [.1 3];  % Peak location for first and last vectors
+ihbasprs.hpeaks = [.001 3];  % Peak location for first and last vectors
 ihbasprs.b = 0.15;  % How nonlinear to make spacings
 ihbasprs.absref = 0; %.1; % absolute refractory period 
 [iht,ihbas,ihbasis] = makeBasis_PostSpike(ihbasprs,dt);
