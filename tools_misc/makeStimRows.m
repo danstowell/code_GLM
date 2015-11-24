@@ -48,8 +48,8 @@ if flag == 0  % Compute with zero-padding. ----------------------------------
             fliplr(toeplitz(Stim(:, j), [Stim(1,j) zeros(1,n-1)]));
     end
     
-    
-elseif (length(flag) == 1)  % compute only for stimuli at times >= n ----------
+% Dan note: edited this check, which was previously "elseif length(flag)==1", because it was accidentally catching vectors of length 1 as well as scalars
+elseif flag == 1  % compute only for stimuli at times >= n ----------
     S = zeros(sz(1)-n+1,n2*n);
     for j=1:n2
         S(:,(n*(j-1)+1):(n*j)) = ...
