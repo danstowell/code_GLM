@@ -73,7 +73,8 @@ nsp = length(tsp{1});
 stas = cell(k,1);
 for whichn = 1:k
 	sta0 = simpleSTC(Stim,tsp{whichn},nkt);
-	stas{whichn} = reshape(sta0,nkt,[]); 
+	stas{whichn} = reshape(sta0,nkt,1);
+	%stas{whichn} = reshape(sta0,nkt,[]);
 end;
 
 
