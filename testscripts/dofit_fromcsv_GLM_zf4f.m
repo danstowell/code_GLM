@@ -191,6 +191,7 @@ if csvoutpath
 	csvfp_tx = fopen(sprintf('%s_kernels_timeaxis.csv', outfnamestem), 'w');
 	csvfp_kd = fopen(sprintf('%s_kernels_discret.csv', outfnamestem), 'w');
 	csvfp_ba = fopen(sprintf('%s_basis.csv', outfnamestem), 'w');
+	csvfp_bb = fopen(sprintf('%s_basis_orth.csv', outfnamestem), 'w');
 	% headers
 	fprintf(csvfp_0d, 'runname,neglogli\n');
 	fprintf(csvfp_1d, 'runname,individ,numcalls\n');
@@ -214,14 +215,17 @@ if csvoutpath
 		fprintf(csvfp_tx, ',%g', plotx(xpos));
 	end
 	fprintf(csvfp_tx, '\n');
-	%disp("gg{1}.ihbas:");
-	%disp(gg{1}.ihbas);
-	for whichbas=1:size(gg{1}.ihbas, 2)
-		fprintf(        csvfp_ba, '%g',  gg{1}.ihbas(2   , whichbas));
-		for xpos=3:size(plotx)
-			fprintf(csvfp_ba, ',%g', gg{1}.ihbas(xpos, whichbas));
+	% Here we're getting an explicit copy of the non-orthogonalised basis, using the "ihbasprs" parameters that were used to initialise the fit
+	[iht,ihbas,ihbasis] = makeBasis_PostSpike(gg{1}.ihbasprs,DTsim);
+	for whichbas=1:size(ihbasis, 2)
+		fprintf(        csvfp_ba, '%g',  ihbasis(1   , whichbas));
+		fprintf(        csvfp_bb, '%g',  ihbas(  1   , whichbas));
+		for xpos=2:size(plotx)
+			fprintf(csvfp_ba, ',%g', ihbasis(xpos, whichbas));
+			fprintf(csvfp_bb, ',%g', ihbas(xpos, whichbas));
 		end
 		fprintf(csvfp_ba, '\n');
+		fprintf(csvfp_bb, '\n');
 	end
 	fflush(csvfp_0d);
 	fclose(csvfp_0d);
@@ -235,6 +239,8 @@ if csvoutpath
 	fclose(csvfp_tx);
 	fflush(csvfp_ba);
 	fclose(csvfp_ba);
+	fflush(csvfp_bb);
+	fclose(csvfp_bb);
 
 	if resimuldur > 0
 		disp("*** NOTE: resimulation from fitted model. not validated yet.");
