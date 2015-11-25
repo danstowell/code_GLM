@@ -114,10 +114,7 @@ for whichn = 1:k
 		else
 			ihdata = gg{whichn}.ih2(:, fromn);
 		end
-		% TODO experimenting with showing the un-warped kernels
 		ploty = gg{whichn}.ihbas*ihdata;
-		%ploty = nlfun(gg{whichn}.ihbas*ihdata);
-		%[ignore_this, peakposraw] = max(abs(ploty));  % NOTE: the abs here is to detect pos and neg peaks, thus needs un-warped
 		if fromn==whichn
 			[ignore_this, peakposraw] = max(-ploty);  % negative so that for self-self it's the inhibitions we're looking at
 		else
