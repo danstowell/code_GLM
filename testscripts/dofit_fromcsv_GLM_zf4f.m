@@ -1,5 +1,5 @@
-function [numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath, resimuldur, nlfun)
-% [peakpos, peakval] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath, resimuldur, nlfun)
+function [numcalls, peakpos, peakval, neglogli, dc] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath, resimuldur, nlfun)
+% [numcalls, peakpos, peakval, neglogli, dc] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, plotpath, csvoutpath, resimuldur, nlfun)
 %
 % load some zf4f-format data and analyse "as if" it were cell spiking data. returns analysed data.
 % also does a plot and writes it to a file in the folder named by 'plotpath'. if 'plotpath' is '' or 0 it DOESN'T plot. to plot in cwd use '.'
@@ -99,10 +99,12 @@ end
 
 
 %% --- Calc summary stats - used for csv and for returning ----------------------------
-peakpos = zeros(k);
-peakval = zeros(k);
+% the init of 1.23456789 is to flag any errors that may creep in with failure to fill values in. a blue plaster.
+peakpos = ones(k) * 1.23456789;
+peakval = ones(k) * 1.23456789;
+dc = ones(k,1) * 1.23456789;
 plotx = gg{1}.iht;
-kernels_discret = zeros(k,k,size(plotx));
+kernels_discret = ones(k,k,size(plotx)) * 1.23456789;
 for whichn = 1:k
 	for fromn = 1:k
 		if whichn==fromn
@@ -125,6 +127,7 @@ for whichn = 1:k
 		peakval(fromn,whichn) = ploty(peakposraw); % re-grab the peakval, because now we don't want the abs
 		kernels_discret(fromn,whichn,:) = ploty;
 	end
+	dc(whichn) = gg{whichn}.dc;
 end
 
 %% --- Plot results ----------------------------
@@ -195,12 +198,12 @@ if csvoutpath
 	csvfp_bb = fopen(sprintf('%s_basis_orth.csv', outfnamestem), 'w');
 	% headers
 	fprintf(csvfp_0d, 'runname,neglogli\n');
-	fprintf(csvfp_1d, 'runname,individ,numcalls\n');
+	fprintf(csvfp_1d, 'runname,individ,numcalls,dc\n');
 	fprintf(csvfp_2d, 'runname,frm,too,peakval,peakpos\n');
 	% data
 	fprintf(csvfp_0d, '%s,%g\n', runlabel, neglogli);
 	for whichn = 1:k
-		fprintf(csvfp_1d, '%s,%i,%i\n', runlabel, whichn, numcalls(whichn));
+		fprintf(csvfp_1d, '%s,%i,%i,%i\n', runlabel, whichn, numcalls(whichn), dc(whichn));
 		for fromn = 1:k
 			fprintf(csvfp_2d, '%s,%i,%i,%g,%g\n', runlabel, fromn, whichn, peakval(fromn,whichn), peakpos(fromn,whichn));
 

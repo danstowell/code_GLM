@@ -1,5 +1,5 @@
-function [numcalls, peakpos, peakval, neglogli] = testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs, nlfun, resimuldur)
-% [peakpos, peakval] = testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs)
+function [numcalls, peakpos, peakval, neglogli, dc] = testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs, nlfun, resimuldur)
+% [numcalls, peakpos, peakval, neglogli, dc] = testscript_GLM_zf4f(dataname, variantname, indexmapper, startsecs, endsecs)
 %
 % load some zf4f data and analyse "as if" it were cell spiking data. writes out a plot.
 
@@ -19,5 +19,5 @@ disp(sprintf('Fitting with nonlin %s on %s', func2str(nlfun), csvpath));
 
 k = length(indexmapper);
 regln = -1; % NOTE default regularisation strength here
-[numcalls, peakpos, peakval, neglogli] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, 'outplot', 'outcsv', resimuldur, nlfun);
+[numcalls, peakpos, peakval, neglogli, dc] = dofit_fromcsv_GLM_zf4f(csvpath, runlabel, k, indexmapper, startsecs, endsecs, regln, 'outplot', 'outcsv', resimuldur, nlfun);
 

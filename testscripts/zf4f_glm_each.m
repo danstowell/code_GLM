@@ -67,6 +67,7 @@ for whichnlf = 1:length(nlfuns)
 	resultspos = struct();
 	resultsval = struct();
 	negloglis  = struct();
+	dcs        = struct();
 	for whichset=1:size(setses,2)
 		d = setses{whichset};
 		if whichnlf==1 || whichnlf==2
@@ -75,7 +76,7 @@ for whichnlf = 1:length(nlfuns)
 			resimuldur = 0;
 		end
 		runname = sprintf('%s%s', d.dataname, d.variantname);
-		[numcalls.(runname), resultspos.(runname), resultsval.(runname), negloglis.(runname)] = testscript_GLM_zf4f(d.dataname, d.variantname, d.indexmapper, d.startsecs, d.endsecs, nlfun, resimuldur);
+		[numcalls.(runname), resultspos.(runname), resultsval.(runname), negloglis.(runname), dcs.(runname)] = testscript_GLM_zf4f(d.dataname, d.variantname, d.indexmapper, d.startsecs, d.endsecs, nlfun, resimuldur);
 	end
 
 
@@ -96,7 +97,7 @@ for whichnlf = 1:length(nlfuns)
 		csvfname = sprintf('outcsv/%s_1d.csv', outfnamestem);
 		disp(csvfname);
 		csvfp_1d = fopen(csvfname, 'w');
-		fprintf(csvfp_1d, 'runname,individ,numcalls\n');
+		fprintf(csvfp_1d, 'runname,individ,numcalls,dc\n');
 
 		csvfname = sprintf('outcsv/%s_2d.csv', outfnamestem);
 		disp(csvfname);
@@ -110,9 +111,9 @@ for whichnlf = 1:length(nlfuns)
 			plotdata_num = zeros(numsesses,1);
 			plotdata_pos = zeros(numsesses,4);
 			plotdata_val = zeros(numsesses,4);
-			for fromn=1:4
-				for whichsess=1:numsesses
-					plotdata_num(whichsess)        =     numcalls.(oursetses{whichsess})(whichn);
+			for whichsess=1:numsesses
+				plotdata_num(whichsess)        =     numcalls.(oursetses{whichsess})(whichn);
+				for fromn=1:4
 					plotdata_pos(whichsess, fromn) = 1 / max(1e-1, resultspos.(oursetses{whichsess})(fromn, whichn));
 					plotdata_val(whichsess, fromn) =     resultsval.(oursetses{whichsess})(fromn, whichn);
 				end;
@@ -172,7 +173,7 @@ for whichnlf = 1:length(nlfuns)
 			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			% write csv data
 			for whichsess=1:numsesses
-				fprintf(csvfp_1d, '%s,%i,%i\n', oursetses{whichsess}, whichn, plotdata_num(whichsess));
+				fprintf(csvfp_1d, '%s,%i,%i,%g\n', oursetses{whichsess}, whichn, plotdata_num(whichsess), dcs{whichsess});
 				for fromn=1:4
 					fprintf(csvfp_2d, '%s,%i,%i,%g,%g\n', oursetses{whichsess},fromn, whichn, plotdata_val(whichsess, fromn), 1/plotdata_pos(whichsess, fromn));
 				end;
