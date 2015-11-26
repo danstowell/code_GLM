@@ -109,10 +109,12 @@ for whichnlf = 1:length(nlfuns)
 		for whichn=1:4
 			% plot peak level and peak time
 			plotdata_num = zeros(numsesses,1);
+			plotdata_dcs = zeros(numsesses,1);
 			plotdata_pos = zeros(numsesses,4);
 			plotdata_val = zeros(numsesses,4);
 			for whichsess=1:numsesses
 				plotdata_num(whichsess)        =     numcalls.(oursetses{whichsess})(whichn);
+				plotdata_dcs(whichsess)        =     dcs.(     oursetses{whichsess})(whichn);
 				for fromn=1:4
 					plotdata_pos(whichsess, fromn) = 1 / max(1e-1, resultspos.(oursetses{whichsess})(fromn, whichn));
 					plotdata_val(whichsess, fromn) =     resultsval.(oursetses{whichsess})(fromn, whichn);
@@ -173,7 +175,7 @@ for whichnlf = 1:length(nlfuns)
 			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			% write csv data
 			for whichsess=1:numsesses
-				fprintf(csvfp_1d, '%s,%i,%i,%g\n', oursetses{whichsess}, whichn, plotdata_num(whichsess), dcs{whichsess});
+				fprintf(csvfp_1d, '%s,%i,%i,%g\n', oursetses{whichsess}, whichn, plotdata_num(whichsess), plotdata_dcs(whichsess));
 				for fromn=1:4
 					fprintf(csvfp_2d, '%s,%i,%i,%g,%g\n', oursetses{whichsess},fromn, whichn, plotdata_val(whichsess, fromn), 1/plotdata_pos(whichsess, fromn));
 				end;
