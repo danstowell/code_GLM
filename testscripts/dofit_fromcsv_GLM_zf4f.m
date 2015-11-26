@@ -200,7 +200,7 @@ if csvoutpath
 	% data
 	fprintf(csvfp_0d, '%s,%g\n', runlabel, neglogli);
 	for whichn = 1:k
-		fprintf(csvfp_1d, '%s,%i,%i,%i\n', runlabel, whichn, numcalls(whichn), dc(whichn));
+		fprintf(csvfp_1d, '%s,%i,%i,%g\n', runlabel, whichn, numcalls(whichn), dc(whichn));
 		for fromn = 1:k
 			fprintf(csvfp_2d, '%s,%i,%i,%g,%g\n', runlabel, fromn, whichn, peakval(fromn,whichn), peakpos(fromn,whichn));
 
