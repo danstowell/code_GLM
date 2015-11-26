@@ -246,6 +246,12 @@ if csvoutpath
 	if resimuldur > 0
 		disp("*** NOTE: resimulation from fitted model. not validated yet.");
 
+		swid = 1;  % Stimulus width  (pixels).  Must match # pixels in stim filter
+		Stim = zeros(resimuldur * RefreshRate,swid);
+
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		% full-group resimulation
+
 		% copying fitted parameters into simulation struct
 		%disp('dc pre');
 		%disp(ggsim.dc);
@@ -268,13 +274,10 @@ if csvoutpath
 					kernelprs = gg{whichn}.ih2(:,fromn);
 				end
 				kernel = gg{whichn}.ihbas * kernelprs;
-
 				ggsim.ih(:,fromn,whichn) = kernel;
 			end
 		end
 
-		swid = 1;  % Stimulus width  (pixels).  Must match # pixels in stim filter
-		Stim = zeros(resimuldur * RefreshRate,swid);
 		[tsp, vmem, Ispk] = simGLMcpl(ggsim, Stim);  % Simulate GLM response
 		% since this is a multi thing, it returns "tsp" as a cell array of 3 items, each one being a list of timestamps
 
@@ -296,6 +299,26 @@ if csvoutpath
 		fprintf(csvfp, 'time,dursecs,individ\n');
 		for row=tspdata'
 			fprintf(csvfp, '%g,%g,%i\n', row(1), 0.1, row(2)-1);
+		end
+		fclose(csvfp);
+
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		% single-solo-individual resimulation
+
+		% create a brand new gg object
+		ggsim_just_solo = makeSimStruct_GLM(nkt,DTsim);
+		% set gg parameters: nlfun, dc, ih
+		whichn = 1
+		ggsim_just_solo.nlfun = nlfun;
+		ggsim_just_solo.dc = gg{whichn}.dc;
+		ggsim_just_solo.ih = gg{whichn}.ihbas * gg{whichn}.ih;
+		% call the main simul thing
+		[tsp, vmem, Ispk] = simGLM(ggsim_just_solo, Stim);
+		% write out a CSV file of the generated timestamps
+		csvfp = fopen(sprintf('%s_resimulated_asolo.csv', outfnamestem), 'w');
+		fprintf(csvfp, 'time,dursecs,individ\n');
+		for atimepos=tsp'
+			fprintf(csvfp, '%g,%g,%i\n', atimepos, 0.1, whichn-1);
 		end
 		fclose(csvfp);
 
