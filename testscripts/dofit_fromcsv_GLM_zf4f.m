@@ -92,6 +92,7 @@ for whichn = 1:k
 	gg0.tsp = tsp{whichn};   % cell spike times (vector)
 	gg0.tsp2 = tsp(setdiff(1:k, whichn));  % spike trains from "coupled" cells (cell array of vectors)
 	gg0.tspi = 1; % 1st spike to use for computing likelihood (eg, can ignore 1st n spikes)
+	printf('"b" parameter: %g\n', gg0.ihbasprs.b);
 	[gg{whichn}, neglogli_each] = MLfit_GLM(gg0, Stim, regln, opts); % do ML (requires optimization toolbox)
 	printf('MLfit #%i gets neglogli %g\n', whichn, neglogli_each);
 	neglogli += neglogli_each;
@@ -296,7 +297,7 @@ if csvoutpath
 
 		% write out a CSV file of the generated timestamps
 		csvfp = fopen(sprintf('%s_resimulated.csv', outfnamestem), 'w');
-		fprintf(csvfp, 'time,dursecs,individ\n');
+		%fprintf(csvfp, 'time,dursecs,individ\n');
 		for row=tspdata'
 			fprintf(csvfp, '%g,%g,%i\n', row(1), 0.1, row(2)-1);
 		end
