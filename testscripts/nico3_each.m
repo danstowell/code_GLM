@@ -3,9 +3,9 @@ use_days = [1, 2, 4, 5];
 use_trios = {'A', 'B', 'C', 'D', 'E'};
 use_vers = {'ind', 'typ'};
 
+for whichver=use_vers
 for whichtrio=use_trios
 for whichday=use_days
-for whichver=use_vers
 
 	runlabel = sprintf('d%i_t%s_%s', whichday, whichtrio{1}, whichver{1});
 	csvpath = sprintf('~/datasets/nico_mpio_trios/translated/nico3_d%i_t%s_%s.csv', whichday, whichtrio{1}, whichver{1});
