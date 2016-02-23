@@ -1,7 +1,8 @@
 #!/bin/sh
 
 octave -q --no-gui --no-window-system --eval "setpaths
+nico3_each
 #simulate_coupled_network
-zf4f_glm_each
+#zf4f_glm_each
 "
 
